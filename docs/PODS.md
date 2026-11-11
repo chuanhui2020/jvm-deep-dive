@@ -109,6 +109,12 @@ kubectl cp "$lab_pod:/data/observe.jfr" build/observe.jfr
 
 清单将 `/tmp` 和 `/data` 挂为可写 emptyDir，根文件系统只读。运行用户一致，便于 attach。emptyDir 不是持久化存储；容器结束后不能再 exec/cp，删除 Pod 后数据也会消失。请在保留窗口结束前导出；需要长期保存时将 `/data` 改为自己的 PVC。
 
+## G1 / 分代 ZGC 的持续观察
+
+GC 项目提供两份可独立创建的 Job：`labs/gc/k8s/job-g1-cycles.yaml` 与 `job-zgc-cycles.yaml`，复用自己的 GC 镜像，分别覆盖完整 JVM 参数，运行 120 秒 cycles 负载并保留 300 秒。它们的日志写入 `/data`，配置有文件轮转；容器退出前导出全部相关文件。
+
+步骤与实际验证边界见 [收集器实验手册](gc/EXPERIMENTS.md)。G1 清单降低固定 IHOP 是为了观察周期，不是生产调优建议；两份 Job 同时运行也不能作为公平性能排名。
+
 ## 覆盖参数并重复实验
 
 在具体项目的 `k8s/job.yaml` 修改 args 和 env 后重新创建 Job：

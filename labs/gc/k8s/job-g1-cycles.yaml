@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jvm-g1-cycles
+  labels:
+    app: jvm-lab
+    lab: gc
+    collector: g1
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 1200
+  template:
+    metadata:
+      labels:
+        app: jvm-lab
+        lab: gc
+        collector: g1
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 15
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+      containers:
+        - name: lab
+          image: jvm-lab-gc:local
+          imagePullPolicy: IfNotPresent
+          args: ["cycles", "120", "32", "16", "1"]
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xms128m -Xmx128m -XX:+UseG1GC -XX:-G1UseAdaptiveIHOP -XX:InitiatingHeapOccupancyPercent=20 -XX:NativeMemoryTracking=summary -Djava.io.tmpdir=/tmp -Xlog:gc*=debug:file=/data/gc.log:uptime,level,tags:filecount=3,filesize=20M"
+            - name: LAB_START_DELAY_SECONDS
+              value: "10"
+            - name: LAB_HOLD_SECONDS
+              value: "300"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: evidence
+              mountPath: /data
+            - name: temporary
+              mountPath: /tmp
+      volumes:
+        - name: evidence
+          emptyDir: {}
+        - name: temporary
+          emptyDir: {}

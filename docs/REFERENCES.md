@@ -46,6 +46,21 @@
 
 JEP 解释设计动机和变化，不等于完整规范或每个厂商构建的支持承诺。JEP 页面可能在发布后继续补充说明，因此源码问题固定到版本标签。
 
+## G1 / 分代 ZGC 专题源码导航
+
+[专题目录](gc/README.md)按问题连接设计、实现、日志与面试，所有源码链接固定到 `jdk-25-ga`。
+
+| 主线 | 源码入口 | 需要区分的职责 |
+| --- | --- | --- |
+| G1 字段写入 | g1BarrierSet.inline.hpp / g1BarrierSet.cpp / g1ConcurrentRefine.cpp | SATB 旧值与来源卡、脏卡队列/refinement |
+| G1 暂停与对象复制 | g1CollectedHeap.cpp / g1YoungCollector.cpp / g1ParScanThreadState.cpp | CSet、外部根、转发竞争、失败处理 |
+| G1 并发周期与策略 | g1ConcurrentMarkThread.cpp / g1ConcurrentMark.cpp / g1Policy.cpp / g1IHOPControl.cpp | 存活信息、候选收益、时间和空间预算 |
+| ZGC 调度与代周期 | zDirector.cpp / zDriver.cpp / zGeneration.cpp | Minor/Major、Young/Old 的启动和阶段协调 |
+| ZGC 颜色与屏障 | zAddress.hpp / zBarrier.inline.hpp / zBarrier.cpp / zStoreBarrierBuffer.cpp | 编码引用、有效地址、p 与 prev、自修复 |
+| ZGC 跨代和搬迁 | zRemembered.cpp / zRememberedSet.hpp / zRelocate.cpp / zForwarding.cpp | 字段位图、页生命周期和有效转发映射 |
+
+[JEP 439](https://openjdk.org/jeps/439)解释分代 ZGC 的设计；[JEP 522](https://openjdk.org/jeps/522)交付在 **JDK 26**，只作 G1 后续双卡表改进对照，不能当成本项目 25 的实现。官方网页和 JEP 会演进，源码级结论需与标签核对。
+
 ## HotSpot 源码：回答“这里具体怎么实现”
 
 入口：[OpenJDK jdk-25-ga 源码](https://github.com/openjdk/jdk/tree/jdk-25-ga)。不要一次读完文件；先从实验中的动作找入口函数，画出一条调用链即可。

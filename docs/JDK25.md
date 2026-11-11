@@ -31,6 +31,12 @@
 - [F05](foundations/05-gc.md)把传统 Eden/Survivor 模型作为有适用范围的教学模型，并核对 G1 的对象总大小及 half-region 边界。
 - [F06](foundations/06-diagnostics.md)逐项说明参数适用性；历史参数、参数存在性和实测收益分别判断。
 
+## G1 / 分代 ZGC 专题边界
+
+- [G1 详解](gc/G1.md)以 25 标签的 SATB、脏卡队列/refinement、疏散与 IHOP 路径为准。JEP 522 的 G1 双卡表改进属于 JDK 26，不能套回 25。
+- [分代 ZGC 详解](gc/GENERATIONAL_ZGC.md)区分普通读屏障、写侧 SATB/remembered、字段位图和 young/old 阶段。不要使用旧非分代模式的颜色位图或“读屏障负责一切标记”概括。
+- [持续负载实测](gc/EXPERIMENTS.md)记录完整补丁版本；源码标签用于解释实现边界，本机日志不替代所有发行版承诺。
+
 ## 实际检查
 
 ~~~powershell

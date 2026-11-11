@@ -176,6 +176,16 @@ Java agent 的 Instrumentation.getObjectSize 测量对象的实现相关浅大�
 
 **可选：** 根据 JDK25.md 探测分代 Shenandoah；不支持时保留错误，不安装额外发行版也可完成主线。
 
+### 持续周期与源码专题
+
+原来的短负载之外，GC 项目新增 `cycles seconds liveMiB blockKiB pauseMillis`，用于有界存活集、持续引用替换和跨代入口观察。它保留原入口，不改变 L07/L08 短负载参数。
+
+~~~powershell
+./scripts/run-lab.ps1 gc -JvmArgs @('-Xms128m','-Xmx128m','-XX:+UseG1GC','-Xlog:gc*') -LabArgs @('cycles','20','32','16','1')
+~~~
+
+完整的 G1/mixed 与分代 ZGC 阶段、日志、Pod 配置和真实记录见 [专题实验](gc/EXPERIMENTS.md)。不要承诺某个时间窗口一定出现固定次数的 mixed、stall 或 Full GC。
+
 ## L09：new 为什么没有对应的分配量
 
 **对应第 08 章；源码 EscapeAnalysisDemo.java。**

@@ -3,7 +3,11 @@ package dev.jvm.labs;
 public final class AllocationPressureDemo {
     private static volatile long sink;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        if (args.length > 0 && args[0].equals("cycles")) {
+            GcCycleDemo.main(java.util.Arrays.copyOfRange(args, 1, args.length));
+            return;
+        }
         int iterations = args.length > 0 ? Integer.parseInt(args[0]) : 60000;
         int sizeKiB = args.length > 1 ? Integer.parseInt(args[1]) : 4;
         if (iterations < 1 || sizeKiB < 1 || sizeKiB > 4096) {

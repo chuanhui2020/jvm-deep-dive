@@ -34,6 +34,8 @@
 | 11 | OOM、栈溢出与堆外内存 | heap-oom、direct、stack |
 | 12 | 生产诊断、性能证据与综合面试 | diagnose：CPU、死锁、内存保留与 JFR |
 
+G1 和分代 ZGC 的深入学习见 [收集器专题](docs/gc/README.md)：包含完整周期、屏障与引用修正、固定版本源码调用链、真实日志片段、持续 cycles 负载、两份独立 Pod 观察配置和 24 个专题追问。第 06、07 章需结合本专题学习。
+
 ## 快速开始（PowerShell）
 
 安装完整 **JDK 25**，将 JAVA_HOME 指向它；未设置时脚本从 PATH 查找。脚本同时检查 java 与 javac 的主版本，拒绝其他版本。实验运行时无第三方库和预览特性；构建使用 Maven，JUnit Jupiter 仅用于测试，首次构建需要联网下载依赖。
