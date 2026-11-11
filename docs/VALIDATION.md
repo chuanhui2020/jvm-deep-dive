@@ -2,7 +2,7 @@
 
 ## 环境与范围
 
-验证日期：2026-11-11。Windows 64 位，Oracle HotSpot 25.0.5.0.2+1-LTS-2，使用 javac --release 25，生成 class 主版本 69。源码无第三方依赖，不使用预览特性。
+验证日期：2026-11-11。Windows 64 位，Oracle HotSpot 25.0.5.0.2+1-LTS-2，使用 javac --release 25，生成 class 主版本 69。实验生产源码无第三方依赖，不使用预览特性；独立 Maven 项目的测试使用 JUnit Jupiter。
 
 ## 已实际执行
 
@@ -35,4 +35,15 @@ GC 时序、弱引用通知、JIT 优化比例、对象大小与递归深度都�
 powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.ps1
 ~~~
 
-生成的 class、agent、验证日志、JFR 与 dump 统一放在已忽略的 build/ 中。重新运行得到的动态数值可能不同，应保留自己的记录。
+每个项目的 class、测试报告和 JAR 放在自身已忽略的 target/ 中；本地验证日志、JFR 与 dump 放在 build/ 中。重新运行得到的动态数值可能不同，应保留自己的记录。
+
+## 独立 Maven 项目与 Pod 配置改造验证（2026-11-11）
+
+- `./mvnw.cmd -B -ntp clean verify`：14 个独立项目构建成功，28 项 JUnit 测试通过，分别覆盖直接入口和同 JVM 的 Pod 观察入口。
+- `scripts/verify-labs.ps1`：全部 14 个实验入口的独立可执行 JAR 通过原有语义检查，包含 layout 同 JAR Java agent、紧凑对象头、类加载资源、受限 OOM 与诊断模式。
+- 将 layout、diagnose 的 POM、Wrapper 和 src 复制到隔离目录后，分别用自身 Wrapper 执行 verify 成功；不依赖仓库父 POM或兄弟项目。
+- 实际运行打包后的 PodLauncher：可以连接同一 JVM 执行 jcmd VM.version；观察等待和参数转发正常，未捕获异常保留非零退出码。
+- 14 份 Kubernetes Job YAML 均已解析，检查无自动重启/重试、独立镜像名和资源限制；所有生产依赖均来自本项目，没有兄弟模块依赖。
+- Docker CLI 存在，但 Docker Desktop Linux engine 未运行；当前 minikube context 的 API 连接失败。因此尚未实际构建容器镜像或在 Pod 中执行。这些配置不能记为已完成的容器实测。
+
+运行方式、前后观察窗口、证据导出时限与完整参数覆盖见 [Pod 观察手册](PODS.md)。

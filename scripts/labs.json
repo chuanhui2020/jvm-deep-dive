@@ -1,0 +1,16 @@
+{
+  "env": "EnvironmentDemo",
+  "bytecode": "BytecodeDemo",
+  "init": "InitializationDemo",
+  "loader": "ClassIdentityDemo",
+  "layout": "ObjectLayoutDemo",
+  "references": "ReachabilityDemo",
+  "gc": "AllocationPressureDemo",
+  "jit": "EscapeAnalysisDemo",
+  "jmm": "MemoryModelDemo",
+  "virtual": "VirtualThreadsDemo",
+  "heap-oom": "HeapOomDemo",
+  "direct": "DirectMemoryDemo",
+  "stack": "StackDepthDemo",
+  "diagnose": "DiagnosticsDemo"
+}

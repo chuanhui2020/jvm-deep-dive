@@ -1,6 +1,6 @@
 # 实验手册：先预测，再解释
 
-所有命令从仓库根目录执行，使用完整 **JDK 25**。源码位于 src/main/java/dev/jvm/labs/，输出位于 build/。实验尽量只改变一个关键条件；字节数、编译阈值、GC 次数和耗时以你的运行记录为准。
+所有命令从仓库根目录执行，使用完整 **JDK 25**。源码位于 labs/<实验名>/src/main/java/dev/jvm/labs/，各项目输出位于自身 target/，诊断证据放在 build/。实验尽量只改变一个关键条件；字节数、编译阈值、GC 次数和耗时以你的运行记录为准。
 
 启动器有 14 个入口；L07/L08 复用 GC 负载，L12 包含堆与直接内存两个对照。GC/JIT 观测不是规范保证，自动验证不对具体时延或 GC 次数断言。
 
@@ -20,7 +20,7 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/run-lab.ps1 
 powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.ps1
 ~~~
 
-这不会修改系统或用户的持久执行策略。启动器每次重新编译，避免修改源码后误跑旧 class；并把 java.io.tmpdir 指向 build/tmp，集中保存临时文件。本机默认临时目录不可用时，JFR 也因此可以正常录制。
+这不会修改系统或用户的持久执行策略。启动器每次通过独立项目的 Maven POM 打包，避免修改源码后误跑旧 class；并把 java.io.tmpdir 指向 build/tmp，集中保存临时文件。本机默认临时目录不可用时，JFR 也因此可以正常录制。
 
 ## L01：确认你究竟运行了什么
 
@@ -45,7 +45,7 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.
 
 ~~~powershell
 ./scripts/run-lab.ps1 bytecode
-javap -classpath build/classes -p -c -v dev.jvm.labs.BytecodeDemo
+javap -classpath labs/bytecode/target/classes -p -c -v dev.jvm.labs.BytecodeDemo
 ~~~
 
 **预测：** compute(3,4) 输出 14；列出 iload_0→iload_1→iadd→istore_2→iload_2→iconst_2→imul→ireturn 每一步的栈内容。
@@ -318,22 +318,22 @@ jfr print --events jdk.ExecutionSample build/cpu.jfr
 
 ## 原生命令（Linux/macOS）
 
-以下构建命令无需 PowerShell；Windows 也可以按同样 javac/java 参数手工运行。先检查 java 与 javac 均为 25。
+以下命令使用每个项目自带的 Maven Wrapper，需要完整 JDK 25：
 
 ~~~bash
-java --version
-javac --version
-mkdir -p build/classes
-javac --release 25 -encoding UTF-8 -d build/classes src/main/java/dev/jvm/labs/*.java
-printf 'Premain-Class: dev.jvm.labs.SizeAgent\n\n' > build/agent-manifest.mf
-jar --create --file build/size-agent.jar --manifest build/agent-manifest.mf -C build/classes dev/jvm/labs/SizeAgent.class
-java -Xmx64m -cp build/classes dev.jvm.labs.InitializationDemo
-java -Xmx64m -javaagent:build/size-agent.jar -cp build/classes dev.jvm.labs.ObjectLayoutDemo
-java -Xmx64m -XX:+UseCompactObjectHeaders -javaagent:build/size-agent.jar -cp build/classes dev.jvm.labs.ObjectLayoutDemo
-java -Xmx64m -Djdk.virtualThreadScheduler.parallelism=1 -Djdk.virtualThreadScheduler.maxPoolSize=1 -cp build/classes dev.jvm.labs.VirtualThreadsDemo
+./mvnw verify
+cd labs/layout
+./mvnw verify
+java -Xmx64m -javaagent:target/lab.jar -jar target/lab.jar
+java -Xmx64m -XX:+UseCompactObjectHeaders -javaagent:target/lab.jar -jar target/lab.jar
+cd ../virtual
+./mvnw verify
+java -Xmx64m -Djdk.virtualThreadScheduler.parallelism=1 -Djdk.virtualThreadScheduler.maxPoolSize=1 -jar target/lab.jar
 ~~~
 
-**手工运行时保留实验前提：** 堆 OOM 用 -Xmx32m；直接内存用 -Xmx64m -XX:MaxDirectMemorySize=16m；栈深度用 -Xss256k；虚拟线程使用上面的两个调度器参数；layout 必须带 javaagent。
+**手工运行时保留实验前提：** 堆 OOM 用 -Xmx32m；直接内存用 -Xmx64m -XX:MaxDirectMemorySize=16m；栈深度用 -Xss256k；虚拟线程使用上面的两个调度器参数；layout 必须带 javaagent。同一个 layout JAR 同时含 Main-Class 与 Premain-Class，无需单独构建 agent。
+
+每个实验的项目目录都有独立 README、Dockerfile 和 k8s/job.yaml；容器观察步骤见 [Pod 观察手册](PODS.md)。
 
 ## 每次实验的记录模板
 

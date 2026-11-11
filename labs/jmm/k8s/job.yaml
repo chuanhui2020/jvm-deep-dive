@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jvm-jmm
+  labels:
+    app: jvm-lab
+    lab: jmm
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 1200
+  template:
+    metadata:
+      labels:
+        app: jvm-lab
+        lab: jmm
+    spec:
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 15
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+      containers:
+        - name: lab
+          image: jvm-lab-jmm:local
+          imagePullPolicy: IfNotPresent
+          args: []
+          env:
+            - name: LAB_START_DELAY_SECONDS
+              value: "10"
+            - name: LAB_HOLD_SECONDS
+              value: "300"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "128Mi"
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: evidence
+              mountPath: /data
+            - name: temporary
+              mountPath: /tmp
+      volumes:
+        - name: evidence
+          emptyDir: {}
+        - name: temporary
+          emptyDir: {}

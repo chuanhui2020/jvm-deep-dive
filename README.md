@@ -33,31 +33,48 @@
 
 ## 快速开始（PowerShell）
 
-安装完整 **JDK 25**，将 JAVA_HOME 指向它；未设置时脚本从 PATH 查找。脚本同时检查 java 与 javac 的主版本，拒绝其他版本。所有实验均不依赖第三方库、预览特性或外部服务。
+安装完整 **JDK 25**，将 JAVA_HOME 指向它；未设置时脚本从 PATH 查找。脚本同时检查 java 与 javac 的主版本，拒绝其他版本。实验运行时无第三方库和预览特性；构建使用 Maven，JUnit Jupiter 仅用于测试，首次构建需要联网下载依赖。
 
 ~~~powershell
 java -version
 javac -version
+./mvnw.cmd test
+./mvnw.cmd verify
 ./scripts/run-lab.ps1 env
 ./scripts/run-lab.ps1 init
 ./scripts/run-lab.ps1 layout
 ./scripts/verify-labs.ps1
 ~~~
 
-脚本将源码编译到 build/classes，并构建测量对象浅大小所需的小型 Java agent。PowerShell 禁止脚本时的运行方式见 [实验手册](docs/LABS.md#启动与工具路径)。自定义参数示例：
+每个实验都是独立 Maven 项目：`labs/<实验名>/` 内含自己的 `pom.xml`、Maven Wrapper、源码、测试、Dockerfile 和 Pod Job 配置。根 POM 仅聚合构建，不是各项目的 parent；复制一个项目到仓库外也能独立构建。所有项目产物统一命名为各自的 `target/lab.jar`。
+
+例如只构建、运行并制作 GC 实验镜像：
+
+~~~powershell
+cd labs/gc
+./mvnw.cmd verify
+java -Xms64m -Xmx64m -XX:+UseG1GC '-Xlog:gc*' -jar target/lab.jar 60000 4
+docker build -t jvm-lab-gc:local .
+~~~
+
+回到仓库根目录后仍可使用原来的启动入口：
 
 ~~~powershell
 ./scripts/run-lab.ps1 gc -JvmArgs @('-Xms64m','-Xmx64m','-XX:+UseG1GC','-Xlog:gc*') -LabArgs @('60000','4')
 ~~~
 
+**部署与观察 Pod：** 见 [Pod 观察手册](docs/PODS.md)。每个项目独立生成镜像、独立创建一个 Job/Pod，可分别设置 CPU、内存、JVM 参数、实验参数并采集 JFR。镜像保留完整 JDK 25，支持在容器中直接执行 jcmd/jfr。
+
 Linux/macOS 可使用 [实验手册中的原生命令](docs/LABS.md#原生命令linuxmacos)，同样需要 JDK 25。课程采用经典 Java 源码组织，便于关注 JVM 机制。
 
 ## 仓库布局
 
-- src/main/java/dev/jvm/labs/：短小、可单独阅读的实验。
+- labs/<实验名>/：独立 Maven 项目，包含源码、测试、镜像与 Kubernetes Job。
+- pom.xml：只负责一次构建全部项目。
 - docs/：章节内容、实验步骤、面试验收与官方链接。
 - scripts/：版本检查、编译、运行与语义验证。
-- build/：生成的 class、agent、日志、JFR 与 heap dump；不提交。
+- labs/*/target/：每个项目的 class、测试报告和可执行 JAR；不提交。
+- build/：本地验证日志、JFR 与 heap dump；不提交。
 
 本机测试结果与适用边界见 [验证记录](docs/VALIDATION.md)。
 

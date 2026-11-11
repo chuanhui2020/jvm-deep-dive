@@ -3,12 +3,17 @@ $ErrorActionPreference = 'Stop'
 $jdk = Get-LabJdk
 & (Join-Path $PSScriptRoot 'run-lab.ps1') -CompileOnly
 $repo = Split-Path $PSScriptRoot -Parent
-$classes = Join-Path $repo 'build/classes'
+$catalog = Get-Content (Join-Path $PSScriptRoot 'labs.json') -Raw | ConvertFrom-Json
+$modulesByClass = @{}
+foreach ($entry in $catalog.PSObject.Properties) { $modulesByClass[$entry.Value] = $entry.Name }
 $script:checkNumber = 0
 
 function Invoke-LabCheck {
     param([string]$Class, [string[]]$Flags = @(), [string[]]$Arguments = @())
-    $tokens = @('-Xmx64m') + $Flags + @('-cp', $classes, ('dev.jvm.labs.' + $Class)) + $Arguments
+    $module = $modulesByClass[$Class]
+    if (-not $module) { throw "Unknown experiment class: $Class" }
+    $jar = Join-Path $repo ("labs/$module/target/lab.jar")
+    $tokens = @('-Xmx64m') + $Flags + @('-jar', $jar) + $Arguments
     # Bound every JVM: a broken concurrency experiment must not hang verification.
     $script:checkNumber++
     $out = Join-Path $repo ('build/check-' + $script:checkNumber + '-' + $Class + '.out')
@@ -55,7 +60,7 @@ $loader = Invoke-LabCheck 'ClassIdentityDemo'
 foreach ($expected in @('sameName=true', 'sameClass=false', 'parentString=true', 'cast=ClassCastException')) {
     Assert-Text $loader $expected
 }
-$agent = Join-Path $repo 'build/size-agent.jar'
+$agent = Join-Path $repo 'labs/layout/target/lab.jar'
 $layout = Invoke-LabCheck 'ObjectLayoutDemo' -Flags @("-javaagent:$agent")
 Assert-Text $layout 'byte[1024]='
 $compact = Invoke-LabCheck 'ObjectLayoutDemo' -Flags @("-javaagent:$agent", '-XX:+UseCompactObjectHeaders')
@@ -75,7 +80,7 @@ Assert-Text (Invoke-LabCheck 'EscapeAnalysisDemo' -Flags @('-XX:-DoEscapeAnalysi
 Assert-Text (Invoke-LabCheck 'DiagnosticsDemo' -Arguments @('deadlock', '1')) 'deadlocked=2'
 Assert-Text (Invoke-LabCheck 'DiagnosticsDemo' -Arguments @('cpu', '1')) 'done checksum='
 Assert-Text (Invoke-LabCheck 'DiagnosticsDemo' -Arguments @('retention', '1')) 'retainedMiB='
-$bytecode = & $jdk['javap'] -classpath $classes -p -c -v 'dev.jvm.labs.BytecodeDemo'
+$bytecode = & $jdk['javap'] -classpath (Join-Path $repo 'labs/bytecode/target/classes') -p -c -v 'dev.jvm.labs.BytecodeDemo'
 if ($LASTEXITCODE -ne 0) { throw 'javap failed' }
 foreach ($expected in @('major version: 69', 'ACC_SYNCHRONIZED', 'monitorenter', 'monitorexit', 'ACC_VOLATILE')) {
     Assert-Text ($bytecode -join [Environment]::NewLine) $expected
