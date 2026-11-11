@@ -23,6 +23,14 @@
 | CMS 是现代生产首选 | CMS 已移除；只作为历史对比，不提供失效参数练习 | 第 07 章 |
 | AOT 就是把 Java 变成无需 JVM 的原生程序 | JDK 25 的 AOT 缓存与训练流程仍服务于 JVM；与 Native Image 区分 | JEP 514、515 |
 
+## 基础面试中的规范细节
+
+- [F03](foundations/03-class-loading.md)区分准备阶段默认初始化、初始化过程中的 ConstantValue 处理、普通静态赋值与使用方常量内联，不把它们合成一句“final 在准备阶段赋值”。
+- [F01](foundations/01-execution.md)区分局部变量表的逻辑槽位、操作数栈单位与实际机器内存布局，不用 long/double 占两个槽推断 JVM 位数。
+- [F02](foundations/02-memory.md)区分方法区、Metaspace、Class 镜像、Code Cache 与 RSS；虚拟线程栈和分配消除也有单独边界。
+- [F05](foundations/05-gc.md)把传统 Eden/Survivor 模型作为有适用范围的教学模型，并核对 G1 的对象总大小及 half-region 边界。
+- [F06](foundations/06-diagnostics.md)逐项说明参数适用性；历史参数、参数存在性和实测收益分别判断。
+
 ## 实际检查
 
 ~~~powershell

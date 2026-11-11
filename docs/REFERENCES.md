@@ -8,6 +8,21 @@
 - [JLS 25 第 12 章](https://docs.oracle.com/javase/specs/jls/se25/html/jls-12.html)：类初始化与程序执行，对应第 03 章。
 - [JLS 25 第 17 章](https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html)：线程、锁与 JMM；重点读 17.4 的 happens-before 和 17.5 的 final 字段规则，对应第 09 章。
 
+## 基础详解的依据与导航
+
+[基础详解目录](foundations/README.md)提供覆盖关系与面试自测。主题组织参考 [JavaGuide JVM 入门](https://javaguide.cn/java/jvm/jvm-intro.html)，技术结论以本节官方资料为准，例子和图表独立编写。
+
+| 详解 | 优先核对的正式依据 | 要避免混淆的层次 |
+| --- | --- | --- |
+| F01 | JVMS 25 §2.6、§4、§6；JLS 25 §16、§17 | 逻辑栈帧、编译器输出、JIT 后的物理布局 |
+| F02 | JVMS 25 §2.5；JLS 25 §4、§12.5；JDK 25 java/NMT 文档 | 方法区、Metaspace、Class 镜像和进程内存 |
+| F03 | JVMS 25 §5；JLS 25 §12、§13；ClassLoader 25 API | 默认值、ConstantValue、普通静态赋值和类型身份 |
+| F04 | java.lang.ref 25；System/Reference/Cleaner API；JLS 25 §12.6～12.7 | 强可达、回收条件、队列通知与及时资源释放 |
+| F05 | JDK 25 GC 指南；jdk-25-ga 的 G1 实现；JEP 490/521 | GC 算法、分代策略、具体收集器及临界比较 |
+| F06 | JDK 25 java/jcmd/诊断文档；JLS 25 §17；JEP 491 | 参数存在、实际生效、目标指标改善 |
+
+正文链接指向相应章节。JVMS 不指定 GC 算法或物理对象布局；这些内容不能伪装成规范强制要求。文档中涉及 JDK 25 的版本结论不延伸为 JDK 26 或厂商补丁的默认承诺。
+
 ## 工具与实现指南：回答“如何观察”
 
 - [JDK 25 java 命令与参数](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html)：检查参数的状态、默认值与适用边界，不从旧博客复制启动串。

@@ -47,3 +47,12 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.
 - Docker CLI 存在，但 Docker Desktop Linux engine 未运行；当前 minikube context 的 API 连接失败。因此尚未实际构建容器镜像或在 Pod 中执行。这些配置不能记为已完成的容器实测。
 
 运行方式、前后观察窗口、证据导出时限与完整参数覆盖见 [Pod 观察手册](PODS.md)。
+
+## 基础详解与面试内容补充验证（2026-11-11）
+
+- 新增 [F01～F06 基础详解](foundations/README.md)，与 12 章主课程、实验手册、48 个原有追问和五个案例衔接；新增 30 个基础口述自测题及参考要点。
+- 核对 Java SE 25 的 JVMS/JLS、JDK 25 API/工具/GC 文档与相关 JEP；实现临界比较固定到 OpenJDK `jdk-25-ga`。正文区分规范、实现与单次实验，不将旧参数直接作为当前配置。
+- 检查 42 个外部来源页面及其正文引用的章节锚点，均可访问；确认没有把 JDK 25 链接重定向到 JDK 26 后当作本版本依据。
+- 检查本地文件与章节链接、代码块闭合、控制字符和 30 题计数。README、主课程、版本校准、资料导航与个人学习表均已接入新内容。
+- 在完整 JDK 25 上编译并执行正文的 Account、Config 和 compute 示例，验证对象字段、静态赋值结果；用 javap 检查 compute 的 `stack=2, locals=3` 和 Config 的 ConstantValue/静态初始化结构，与正文推演一致。
+- 本轮为文档补充，没有修改实验生产代码、Maven 构建或 Pod 配置，因此没有重复全量构建或新增容器部署实测声明。
