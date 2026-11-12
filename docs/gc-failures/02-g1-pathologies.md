@@ -79,11 +79,7 @@ g1-humongous 强制 1 MiB region。先创建 48 个 payload 为 600 KiB 的数�
 
 600 KiB 数组大于半个 1 MiB region 的阈值，每个按 humongous 路径占用区域。相间释放制造空间形态压力；大请求则需要足够连续 region。这个结构不能简化成只把 Java 堆 used 从容量中相减。
 
-```text
-教学布局直觉，具体地址需另外取证：
-[活][洞][活][洞] ... [活][洞][尚未使用的尾部]
-总空闲可以大于请求，但某个连续区间可能不足
-```
+![G1 连续区域压力的教学布局](../assets/diagrams/g1-contiguous-regions.svg)
 
 在 pinned `jdk-25-ga` 中，humongous 的比较是对象总大小严格大于 half-region 阈值。数组头和对齐也要计入，不能只比 payload。[G1CollectedHeap.hpp](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/g1/g1CollectedHeap.hpp)
 

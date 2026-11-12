@@ -25,11 +25,7 @@ ZGC 有不同页类型和不同对象大小的处理路径。页年龄、晋升�
 
 堆中对象引用字段用带元数据的表示编码，供应用正常解引用的值需要由屏障转换为合适的地址表示。学习时区分：字段的位置 p、字段保存的编码引用、去色后的目标地址、目标对象本身。
 
-```text
-字段槽 p → 编码引用（地址相关信息 + 元数据）
-                    ↓ 屏障检查/必要修正/去色
-                当前可使用的对象地址
-```
+![ZGC 编码引用到可用地址](../assets/diagrams/zgc-reference-decoding.svg)
 
 `jdk-25-ga` 的 zAddress 定义涉及年轻标记、老标记、finalizable、remembered、remapped 等元数据。不同架构的编码和指令优化可能不同；不要背早期 ZGC 的“固定地址位数 + 固定几个高位颜色”的图来回答 25。[zAddress.hpp](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/z/zAddress.hpp)
 

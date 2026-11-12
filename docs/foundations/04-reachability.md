@@ -93,10 +93,7 @@ if (value != null) {
 
 ### ThreadLocal
 
-```text
-存活的工作线程 → ThreadLocalMap → Entry → 强 value
-                              └→ 弱 key
-```
+![ThreadLocal 的强弱引用关系](../assets/diagrams/thread-local-references.svg)
 
 key 变成弱可达并被清空，并不自动切断 Entry 对 value 的强引用。线程池线程长时间存在时，value 可能超过一次请求的生命周期。因此要在合适的 finally 中 remove，并避免把线程本地上下文误当成请求结束后自然销毁的普通局部变量。
 

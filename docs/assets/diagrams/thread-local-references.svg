@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="440" viewBox="0 0 720 440" role="img" aria-labelledby="title desc">
+<title id="title">ThreadLocal 的强弱引用关系</title><desc id="desc">工作线程通过 ThreadLocalMap 强引用 Entry。Entry 强引用 value，弱引用 key；key 消失不会自动移除 value。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b} .edge{fill:none;stroke:#475569;stroke-width:2;marker-end:url(#arrow)}</style>
+<rect width="720" height="440" rx="10" fill="#fff"/>
+<text x="360" y="30" text-anchor="middle" font-size="21" font-weight="bold">ThreadLocal 的保留链</text>
+<rect x="230" y="56" width="260" height="54" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
+<text x="360.0" y="89.0" text-anchor="middle" font-size="18" font-weight="normal">存活的工作线程</text>
+<rect x="230" y="142" width="260" height="54" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
+<text x="360.0" y="175.0" text-anchor="middle" font-size="18" font-weight="normal">ThreadLocalMap</text>
+<rect x="230" y="228" width="260" height="54" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
+<text x="360.0" y="261.0" text-anchor="middle" font-size="18" font-weight="normal">Entry</text>
+<path class="edge" d="M 360 110 V 140"/>
+<path class="edge" d="M 360 196 V 226"/>
+<rect x="54" y="350" width="240" height="56" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
+<text x="174.0" y="384.0" text-anchor="middle" font-size="18" font-weight="normal">value：强引用保留</text>
+<rect x="426" y="350" width="240" height="56" rx="6" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+<text x="546.0" y="384.0" text-anchor="middle" font-size="18" font-weight="normal">key：弱引用</text>
+<path class="edge" d="M 326 282 V 310 H 174 V 348"/>
+<path class="edge" d="M 394 282 V 310 H 546 V 348" stroke-dasharray="7 5"/>
+<text x="174" y="333" text-anchor="middle" font-size="16" font-weight="normal">强引用</text>
+<text x="546" y="333" text-anchor="middle" font-size="16" font-weight="normal">弱引用</text>
+</svg>

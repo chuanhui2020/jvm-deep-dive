@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="366" viewBox="0 0 640 366" role="img" aria-labelledby="title desc">
+<title id="title">ZGC 编码引用到可用地址</title><desc id="desc">读取字段槽 p 中的编码引用，经过屏障检查、必要修正和去色，得到当前可使用的对象地址。编码引用包含地址相关信息和元数据。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b} .edge{fill:none;stroke:#475569;stroke-width:2;marker-end:url(#arrow)}</style>
+<rect width="640" height="366" rx="10" fill="#fff"/>
+<text x="320" y="30" text-anchor="middle" font-size="21" font-weight="bold">ZGC：编码引用到可用地址</text>
+<rect x="60" y="58" width="520" height="72" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
+<text x="320" y="87" text-anchor="middle" font-size="19" font-weight="bold">字段槽 p 中的编码引用</text>
+<text x="320" y="113" text-anchor="middle" font-size="17" font-weight="normal">地址相关信息 + 元数据</text>
+<rect x="60" y="174" width="520" height="58" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
+<text x="320.0" y="209.0" text-anchor="middle" font-size="18" font-weight="normal">屏障检查 / 必要修正 / 去色</text>
+<rect x="60" y="276" width="520" height="58" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
+<text x="320.0" y="311.0" text-anchor="middle" font-size="18" font-weight="normal">当前可使用的对象地址</text>
+<path class="edge" d="M 320 132 V 172"/>
+<path class="edge" d="M 320 234 V 274"/>
+</svg>

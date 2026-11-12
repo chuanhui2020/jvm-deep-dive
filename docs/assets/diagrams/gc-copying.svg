@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="266" viewBox="0 0 800 266" role="img" aria-labelledby="title desc">
+<title id="title">复制：搬迁存活对象并修正引用</title><desc id="desc">复制：搬迁存活对象并修正引用。每一单位使用相同的图形宽度，区域宽度与单位数成正比。等大半区为教学模型，实际收集器的空间组织可能不同</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b} .edge{fill:none;stroke:#475569;stroke-width:2;marker-end:url(#arrow)}</style>
+<rect width="800" height="266" rx="10" fill="#fff"/>
+<text x="400" y="29" text-anchor="middle" font-size="21" font-weight="bold">复制：搬迁存活对象并修正引用</text>
+<text x="22" y="99" text-anchor="start" font-size="17" font-weight="normal">源区域</text>
+<rect x="120" y="62" width="640" height="62" rx="0" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+<text x="440.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">回收后整体可复用 · 10</text>
+<text x="22" y="193" text-anchor="start" font-size="17" font-weight="normal">目标区</text>
+<rect x="120" y="156" width="128" height="62" rx="0" fill="#dbeafe" stroke="#64748b" stroke-width="1.5"/>
+<text x="184.0" y="193" text-anchor="middle" font-size="17" font-weight="normal">A · 2</text>
+<rect x="248" y="156" width="64" height="62" rx="0" fill="#dcfce7" stroke="#64748b" stroke-width="1.5"/>
+<text x="280.0" y="193" text-anchor="middle" font-size="15" font-weight="normal">B · 1</text>
+<rect x="312" y="156" width="128" height="62" rx="0" fill="#ede9fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="376.0" y="193" text-anchor="middle" font-size="17" font-weight="normal">C · 2</text>
+<rect x="440" y="156" width="320" height="62" rx="0" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
+<text x="600.0" y="193" text-anchor="middle" font-size="17" font-weight="normal">空闲 · 5</text>
+<text x="400" y="248" text-anchor="middle" font-size="16" font-weight="normal">等大半区为教学模型，实际收集器的空间组织可能不同</text>
+</svg>

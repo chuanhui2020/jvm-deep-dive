@@ -117,11 +117,7 @@ jcmd $labPid VM.native_memory summary
 
 假设写线程先执行 `payload = 42`，再执行 `ready = true`；ready 是 volatile。读线程观察到对应的发布后，再读 payload。需要讲出的链条是：
 
-```text
-写 payload → 程序顺序 → 写 volatile ready
-                              ↓ 同步关系
-读 payload ← 程序顺序 ← 读 volatile ready
-```
+![volatile 发布的 happens-before 链](../assets/diagrams/volatile-happens-before.svg)
 
 利用 happens-before 的传递性，才能推导发布前普通字段写入的可见性。把 ready 去掉 volatile 后，循环中插入 Thread.sleep 并不能重新建立这条同步链；一次运行看似正常不能证明安全。
 

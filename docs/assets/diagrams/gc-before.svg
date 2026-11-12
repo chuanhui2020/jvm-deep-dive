@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="172" viewBox="0 0 800 172" role="img" aria-labelledby="title desc">
+<title id="title">抽象堆：回收前</title><desc id="desc">抽象堆：回收前。每一单位使用相同的图形宽度，区域宽度与单位数成正比。A、B、C 存活，共 5 单位；x、y 为死对象</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b} .edge{fill:none;stroke:#475569;stroke-width:2;marker-end:url(#arrow)}</style>
+<rect width="800" height="172" rx="10" fill="#fff"/>
+<text x="400" y="29" text-anchor="middle" font-size="21" font-weight="bold">抽象堆：回收前</text>
+<text x="22" y="99" text-anchor="start" font-size="17" font-weight="normal">回收前</text>
+<rect x="120" y="62" width="128" height="62" rx="0" fill="#dbeafe" stroke="#64748b" stroke-width="1.5"/>
+<text x="184.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">A · 2</text>
+<rect x="248" y="62" width="128" height="62" rx="0" fill="#fee2e2" stroke="#64748b" stroke-width="1.5"/>
+<text x="312.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">x · 2</text>
+<rect x="376" y="62" width="64" height="62" rx="0" fill="#dcfce7" stroke="#64748b" stroke-width="1.5"/>
+<text x="408.0" y="99" text-anchor="middle" font-size="15" font-weight="normal">B · 1</text>
+<rect x="440" y="62" width="192" height="62" rx="0" fill="#fee2e2" stroke="#64748b" stroke-width="1.5"/>
+<text x="536.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">y · 3</text>
+<rect x="632" y="62" width="128" height="62" rx="0" fill="#ede9fe" stroke="#64748b" stroke-width="1.5"/>
+<text x="696.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">C · 2</text>
+<text x="400" y="154" text-anchor="middle" font-size="16" font-weight="normal">A、B、C 存活，共 5 单位；x、y 为死对象</text>
+</svg>
