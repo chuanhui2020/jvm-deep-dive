@@ -1,5 +1,9 @@
 # F06：参数、故障与面试综合推理
 
+**导航：** [学习路线](../README.md) · [第 12 章](../CURRICULUM.md#第-12-章生产诊断与综合推理)
+
+**选读位置：** 第 08 章读 §6；第 09 章读 §7 的 JMM 与 monitor；第 10 章读虚拟线程小节；第 11 章读 §2、§4；第 12 章串联 §1、§5、§8。
+
 对应主课程 08～12。本篇把前面的区域、执行、加载和 GC 知识连接到参数选择和故障判断。面试中先解释证据为什么能区分候选原因，再提出改动。
 
 ## 1. 调参前先定义问题
@@ -80,6 +84,8 @@ OOM 消息是分流线索，不是完整根因证明。还要确认它属于哪�
 
 这三个实验会捕获预期 Error 以打印教学输出；不能据此认为生产代码捕获 OOM 后可以安全继续服务。
 
+**接着实践：** [L12 / L13](../LABS.md#l12堆-oom-与直接内存-oom) → [故障专题步骤 1～5](../gc-failures/README.md#学习顺序) → [返回第 11 章验收](../CURRICULUM.md#第-11-章oom栈溢出与内存预算)。
+
 ## 5. CPU 高、GC 频繁、延迟高如何区分
 
 **CPU 高：** 对齐进程与线程 CPU 变化、线程采样和 JFR execution sample。业务循环、重试、编译、GC 都可能占 CPU。线程栈中的方法名只是瞬时位置，重复样本与消耗量才帮助定位。
@@ -99,6 +105,8 @@ jcmd $labPid VM.native_memory summary
 
 日志、JFR 和 NMT 各有观察范围；命令成本与采样限制查 [JDK 25 故障诊断工具](https://docs.oracle.com/en/java/javase/25/troubleshoot/diagnostic-tools.html)。
 
+**第 12 章读者接着读：** [§8：面试时按四层回答](#8-面试时按四层回答)。
+
 ## 6. JIT 与“对象都在栈上”的追问
 
 解释分配减少时，应描述逃逸分析、内联、标量替换和分配消除的关系。对象是否逃逸取决于优化器能看见的使用方式，不能仅按源码“有没有 return”判断。
@@ -106,6 +114,8 @@ jcmd $labPid VM.native_memory summary
 比较默认与关闭逃逸分析前后的分配计数时，还需确认预热、编译状态和结果消费。某次 localBytes 非零不证明该优化永远无效，近零也不证明对象被实际搬到机器栈。
 
 正式基准应有独立进程、预热、参数控制和抗死代码消除措施。本项目 jit 实验用于解释机制，不应据其一次耗时评价生产吞吐。继续学习见 [主课程第 08 章](../CURRICULUM.md#第-08-章jit逃逸分析去优化与-aot)。
+
+**接着实践：** [L09 逃逸分析](../LABS.md#l09new-为什么没有对应的分配量) → [返回第 08 章验收](../CURRICULUM.md#第-08-章jit逃逸分析去优化与-aot)。
 
 ## 7. JMM、锁与虚拟线程的面试边界
 
@@ -134,14 +144,19 @@ jcmd $labPid VM.native_memory summary
 
 wait 返回后应在循环中重新检查条件，不能把通知当作条件一定成立的保证。死锁、饥饿、锁竞争和正常条件等待是不同现象，线程状态不能单独替代等待关系分析。[JLS 25 §17.2、§17.3](https://docs.oracle.com/javase/specs/jls/se25/html/jls-17.html#jls-17.2)
 
+**接着实践：** [L10 JMM](../LABS.md#l10volatile-可见性与复合操作原子性) → [返回第 09 章验收](../CURRICULUM.md#第-09-章jmm发布锁与竞争)。
+
+### 虚拟线程的版本边界
+
 JDK 25 已包含 monitor 相关虚拟线程卸载改进。持锁等待可以让出 carrier，不代表同一锁的互斥消失，也不代表本地调用等剩余 pinning 都消失。CPU 密集型任务不会因虚拟线程数量增加而获得更多 CPU 核。[JEP 491](https://openjdk.org/jeps/491)
 
 ```powershell
-./scripts/run-lab.ps1 jmm
 ./scripts/run-lab.ps1 virtual
 ```
 
 virtual 实验用唯一 carrier 和每任务独立 monitor 验证协调能完成；把 monitor 改为共享锁却保留锁内全员等待，会制造应用层死锁，这是不同问题。
+
+**接着实践：** [L11 虚拟线程](../LABS.md#l11一个-carrier十二个独立-monitor) → [返回第 10 章验收](../CURRICULUM.md#第-10-章虚拟线程调度与-jdk-25-monitor)。
 
 ## 8. 面试时按四层回答
 
@@ -163,3 +178,7 @@ virtual 实验用唯一 carrier 和每任务独立 monitor 验证协调能完成
 5. **怎样宣称一次调优成功？** 在可比负载与资源边界下，目标指标改善且代价可接受，多轮结果支持结论；保留反例与回退条件。
 
 继续完成 [48 个主课程追问与五个案例](../INTERVIEW.md)，并用 [进度表](../PROGRESS.md)记录自己的证据。
+
+---
+
+[学习路线](../README.md) · [返回本章验收](../CURRICULUM.md#第-12-章生产诊断与综合推理) · [综合案例](../INTERVIEW.md#综合案例)

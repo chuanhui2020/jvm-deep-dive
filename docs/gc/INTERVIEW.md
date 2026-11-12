@@ -1,5 +1,7 @@
 # G1 / 分代 ZGC：对照与面试追问
 
+**导航：** [学习路线](../README.md) · [专题顺序](README.md#阅读顺序) · [第 07 章](../CURRICULUM.md#第-07-章g1分代-zgc-与选择依据)
+
 本篇提供 24 个专题问题。先用两分钟说主链路，再讨论变体和证据；参考要点用于检查遗漏。既要回答“做了什么”，也要回答“不这么做会怎样出错”。前置为 [G1](G1.md)、[分代 ZGC](GENERATIONAL_ZGC.md)与[日志实验](EXPERIMENTS.md)。
 
 ## 1. 机制对照
@@ -75,3 +77,7 @@
 ## 补充：故障与修复对照
 
 [GC 异常专题](../gc-failures/README.md)提供八个独立项目和 E01～E24 追问，补齐 G1 转移失败/大对象、ZGC Allocation Stall、保留泄漏及容器预算。[真实快照](../gc-failures/RESULTS.md)已复现 JVM 退化信号；容器 OOMKilled 和 CPU 限流另标为待实测，不与 cycles 的正常运行混淆。
+
+---
+
+[上一步：ZGC 周期实验](EXPERIMENTS.md#3-分代-zgc读清周期和代) · [学习路线](../README.md) · [返回第 07 章验收](../CURRICULUM.md#第-07-章g1分代-zgc-与选择依据) · [下一章：08 JIT](../CURRICULUM.md#第-08-章jit逃逸分析去优化与-aot)

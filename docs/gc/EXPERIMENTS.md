@@ -1,6 +1,10 @@
 # G1 / 分代 ZGC：实验与日志证据
 
-先读 [G1](G1.md)和[分代 ZGC](GENERATIONAL_ZGC.md)，再预测日志。主流程从仓库根目录在 Minikube Pod 中执行，完整 JDK 25 位于镜像内。本篇 java/Maven/PowerShell 示例保留为可选本机对照，使用时才需要宿主机 JDK 25。下文明确区分可复现的步骤、一次本机观察和未保证出现的事件。
+**导航：** [学习路线](../README.md) · [专题顺序](README.md#阅读顺序) · [第 07 章](../CURRICULUM.md#第-07-章g1分代-zgc-与选择依据)
+
+先读对应收集器的原理，再预测本节日志：[G1](G1.md)配合 §2，[分代 ZGC](GENERATIONAL_ZGC.md)配合 §3。主流程从仓库根目录在 Minikube Pod 中执行，完整 JDK 25 位于镜像内。本篇 java/Maven/PowerShell 示例保留为可选本机对照，使用时才需要宿主机 JDK 25。下文明确区分可复现的步骤、一次本机观察和未保证出现的事件。
+
+**按步骤使用本页：** 读完 G1 后做 §2，再读 ZGC；读完 ZGC 后做 §3，再做专题追问。§4～7 是按需扩展。
 
 ## Minikube 周期观察入口
 
@@ -83,6 +87,8 @@ GC(4) Pause Young (Mixed) ... 82M->36M(128M) 1.570ms
 
 **不能推出：** G1 总会按同样次数运行、该机器拥有某个业务 P99、或换到 Pod 后仍有同样暂停。
 
+**G1 实验完成后：** [阅读分代 ZGC 原理](GENERATIONAL_ZGC.md)。
+
 ## 3. 分代 ZGC：读清周期和代
 
 ```powershell
@@ -111,6 +117,8 @@ GC(0) Major Collection (Warmup) 14M(11%)->26M(20%) 0.005s
 **解释：** Major 中老标记启动与年轻阶段的协调，不能通过“没看到独立 O: Pause Mark Start”否定。周期末占用高于开始也可以是并发分配造成，不能直接宣布 GC 失效。
 
 **未实测声明：** 这组运行没有复现分配等待、OOM 或所有重定位退化路径。文档对它们的讲解来自固定版本实现，不伪造一段失败日志。需要研究时，在自己的预算内改变压力并保存证据；不要求必须制造 OOM 才算学会。
+
+**ZGC 实验完成后：** [回答专题追问](INTERVIEW.md)。
 
 ## 4. 一次只改变一个条件
 
@@ -182,3 +190,7 @@ CPU、内存与观测开销：
 ## 补充：故障与修复对照
 
 [GC 异常专题](../gc-failures/README.md)提供八个独立项目和 E01～E24 追问，补齐 G1 转移失败/大对象、ZGC Allocation Stall、保留泄漏及容器预算。[真实快照](../gc-failures/RESULTS.md)已复现 JVM 退化信号；容器 OOMKilled 和 CPU 限流另标为待实测，不与 cycles 的正常运行混淆。
+
+---
+
+[学习路线](../README.md) · [下一步：专题追问](INTERVIEW.md)

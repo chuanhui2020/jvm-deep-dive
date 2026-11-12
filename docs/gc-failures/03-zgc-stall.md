@@ -1,5 +1,7 @@
 # 分代 ZGC：暂停短，不等于没有分配等待
 
+**导航：** [学习路线](../README.md) · [故障顺序](README.md#学习顺序) · [第 11 章](../CURRICULUM.md#第-11-章oom栈溢出与内存预算)
+
 实验默认按 [Minikube Pod 主流程](../PODS.md)执行；先创建学习环境，再构建单个镜像。日志跟随退出后，先导出证据再删除 fault Job。
 
 独立项目：[zgc-stall](../../labs/zgc-stall/README.md)。前置：[分代 ZGC 详解](../gc/GENERATIONAL_ZGC.md)。这个实验研究应用在等待可分配空间时的成本，不把它命名为一次 G1 式 Full GC。
@@ -76,3 +78,7 @@ kubectl --context jvm-lab -n jvm-labs exec job/zgc-stall-fault -c lab -- jcmd 1 
 **E14：Allocation Stall 就是 Full GC 吗？** 不是。它描述分配等待；要看 ZGC 的请求、代周期和空间路径，不照搬 G1 的事件分类。
 
 **E15：降低分配速率后还有等待，下一步是什么？** 检查真正的存活量、容量和页/搬迁余量，以及 CPU 供给。给出能区分“回收太慢”和“根本没有可回收空间”的下一项证据。
+
+---
+
+[上一步：G1 退化](02-g1-pathologies.md) · [学习路线](../README.md) · [返回本章验收](../CURRICULUM.md#第-11-章oom栈溢出与内存预算) · [下一步：加载器与元空间](04-metaspace.md)

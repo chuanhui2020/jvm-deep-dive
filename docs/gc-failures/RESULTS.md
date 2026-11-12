@@ -1,5 +1,7 @@
 # GC 异常的真实验证快照
 
+**导航：** [学习路线](../README.md) · [完整课程](../CURRICULUM.md)
+
 日期：2026-11-12。环境：Windows、HotSpot JDK `25.0.5.0.2+1-LTS-2`；在同一宿主机顺序运行。原始 result.json、stdout/stderr、轮转 GC 日志与部分 OOM dump 保存在未提交的 build/gc-failure-validation/20261112-115037/。下表是一次观察，不是固定期望值、测试阈值或收集器性能排名。
 
 ## 1. 运行参数和范围

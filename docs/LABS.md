@@ -1,5 +1,7 @@
 # 实验手册：先预测，再解释
 
+**导航：** [学习路线](README.md) · [完整课程](CURRICULUM.md)
+
 主实验在 **Minikube Linux Pod** 中进行，从仓库根目录选择并部署对应 Job，见 [Pod 主手册](PODS.md)。镜像提供完整 **JDK 25**；下文 java、javap、Maven 和 PowerShell 命令作为源码开发、参数推演的本机补充，只有使用这些本机命令时才要求宿主机 JDK 25。源码位于 labs/<实验名>/src/main/java/dev/jvm/labs/，各项目输出位于自身 target/，诊断证据放在 build/。实验尽量只改变一个关键条件；字节数、编译阈值、GC 次数和耗时以你的运行记录为准。
 
 现有 22 个独立项目，其中本节 L01～L14 是基础实验；L07/L08 复用 GC 负载，L12 包含堆与直接内存两个对照。GC/JIT 观测不是规范保证，自动验证不对具体时延或 GC 次数断言。
@@ -55,6 +57,8 @@ kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-env -c lab --pod-running-t
 
 **能证明：** 当前进程报告的版本与参数。**不能证明：** 堆已经全部提交或驻留。
 
+**完成后：** [返回第 01 章验收](CURRICULUM.md#第-01-章建立-jvm-与进程的全景模型)。
+
 ## L02：亲手追踪操作数栈与 monitor
 
 **Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
@@ -81,6 +85,8 @@ javap -classpath labs/bytecode/target/classes -p -c -v dev.jvm.labs.BytecodeDemo
 **变体：** 将同步块内部改成抛异常，重新看异常表；添加接口调用、静态调用后找相应 invoke 指令。
 
 **结论边界：** javap 展示 class 字节码，不展示 JIT 最终机器码。volatile 的内存语义不能仅靠数指令判断。
+
+**完成后：** [返回第 02 章验收](CURRICULUM.md#第-02-章class-文件字节码栈帧与调用)。
 
 ## L03：静态初始化为什么没按直觉发生
 
@@ -118,6 +124,8 @@ inherited=11
 
 **验收：** 解释“final”“常量表达式”“初始化”三者的区别，而不是背“静态字段一定触发”。
 
+**完成后：** [继续 L04 加载器](LABS.md#l04两个一模一样的-class-为什么不是一个类型) → [返回第 03 章验收](CURRICULUM.md#第-03-章类加载初始化与类身份)。
+
 ## L04：两个一模一样的 class 为什么不是一个类型
 
 **Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
@@ -143,6 +151,8 @@ kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-loader -c lab --pod-runnin
 **变体：** 第二次也复用 first 加载器，观察同一个 Class；再解释为什么不能随意对子类依赖的所有核心类使用子优先。
 
 **延伸：** 为热部署画出“存活线程→上下文加载器→旧业务 Class”的路径。这个实验验证类身份，不直接验证类卸载。
+
+**完成后：** [返回第 03 章验收](CURRICULUM.md#第-03-章类加载初始化与类身份)。
 
 ## L05：对象头与浅大小，别再死记 12 字节
 
@@ -182,6 +192,8 @@ Java agent 的 Instrumentation.getObjectSize 测量对象的实现相关浅大�
 
 **边界：** 本机 64 位、8 字节对齐、小堆下的结果不能直接推广到所有平台。要看字段偏移时再引入并固定支持该构建的 JOL 版本，主线不依赖它。
 
+**完成后：** [返回第 04 章验收](CURRICULUM.md#第-04-章内存区域对象布局与分配路径)。
+
 ## L06：循环引用与弱引用队列
 
 **Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
@@ -208,6 +220,8 @@ kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-references -c lab --pod-ru
 
 **边界：** “某次没有被回收”不是“永远不能被回收”的证据。
 
+**完成后：** [返回第 05 章验收](CURRICULUM.md#第-05-章可达性引用与资源生命周期)。
+
 ## L07：分配量大，为什么不必泄漏
 
 **Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
@@ -233,6 +247,8 @@ kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-gc -c lab --pod-running-ti
 **变体：** 次数增加十倍，保持存活环大小；再单独扩大存活环，比较回收后的基线。一次只变一个条件。
 
 **边界：** 打印的 allocatedMiB 不包含对象头与 JVM 自身分配；程序不足以保证出现 mixed GC 或 Full GC，也不能用于证明 SATB 正确性。
+
+**完成后：** [返回第 06 章验收](CURRICULUM.md#第-06-章gc-共性分代屏障与停顿)。
 
 ## L08：G1 与分代 ZGC；humongous 对照
 
@@ -274,6 +290,8 @@ ZGC 对照与工作期取证按 [周期手册](gc/EXPERIMENTS.md)执行，先导
 
 完整的 G1/mixed 与分代 ZGC 阶段、日志、Pod 配置和真实记录见 [专题实验](gc/EXPERIMENTS.md)。不要承诺某个时间窗口一定出现固定次数的 mixed、stall 或 Full GC。
 
+**完成后：** [返回第 07 章验收](CURRICULUM.md#第-07-章g1分代-zgc-与选择依据)。
+
 ## L09：new 为什么没有对应的分配量
 
 **Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
@@ -302,6 +320,8 @@ ThreadMXBean 统计当前平台线程的分配字节。local 创建对象但仅�
 
 **边界：** 结果支持“某些分配被消除”，不能证明“真实对象被放在机器栈上”。这里也不是性能基准；关闭 EA 会影响多项优化，不能仅凭耗时归因。
 
+**完成后：** [返回第 08 章验收](CURRICULUM.md#第-08-章jit逃逸分析去优化与-aot)。
+
 ## L10：volatile 可见性与复合操作原子性
 
 **Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
@@ -327,6 +347,8 @@ kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-jmm -c lab --pod-running-t
 **变体：** 用同一把锁包围完整的读改写，并相应移除锁内部的双线程屏障；得到 200。若把 await 保留在排他的锁内部，会制造新的死锁。
 
 **边界：** 移除 volatile 后，不能用一次未复现来证明安全。需要 JMM 推理或专门的并发压力工具，如 JCStress，不能只加 Thread.sleep 当作同步。
+
+**完成后：** [返回第 09 章验收](CURRICULUM.md#第-09-章jmm发布锁与竞争)。
 
 ## L11：一个 carrier、十二个独立 monitor
 
@@ -355,6 +377,8 @@ kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-virtual -c lab --pod-runni
 **变体：** 去掉 barrier 后改用共享锁，只保留 sleep，观察业务互斥导致串行。不要只改共享锁却保留锁内全员等待，否则第一个任务等其他任务、其他任务等这把锁，是应用死锁。
 
 **边界：** 只验证 monitor 内的这类可卸载等待，不证明所有 JNI/本地阻塞都不会 pin，也不代表 CPU 计算会得到十二倍加速。
+
+**完成后：** [返回第 10 章验收](CURRICULUM.md#第-10-章虚拟线程调度与-jdk-25-monitor)。
 
 ## L12：堆 OOM 与直接内存 OOM
 
@@ -390,6 +414,8 @@ heap-oom 用 32 MiB 堆强引用保留 1 MiB 数组，触发 Java heap space。d
 
 **边界：** 示例捕获 Error 仅为打印信息；堆 OOM 可能由 G1 的大对象分配限制提前触发，保留块数不等于 Xmx/1MiB。dump 文件不提交，重复运行需换文件名或自行管理旧文件。
 
+**完成后：** [继续 L13 栈](LABS.md#l13xss-改变了什么) → [返回第 11 章验收](CURRICULUM.md#第-11-章oom栈溢出与内存预算)。
+
 ## L13：Xss 改变了什么
 
 **Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
@@ -416,6 +442,8 @@ kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-stack -c lab --pod-running
 **变体：** 在递归方法中增加局部计算、改用迭代；观察不能只凭源码局部变量数算真实机器帧大小。
 
 **边界：** 本实验使用 main 平台线程。不能直接将结果推广为虚拟线程的栈预算模型；错误后的恢复也仅用于教学。
+
+**完成后：** [返回第 11 章验收](CURRICULUM.md#第-11-章oom栈溢出与内存预算)。
 
 ## L14：不用看源码，先用证据定位
 
@@ -475,6 +503,8 @@ jfr print --events jdk.ExecutionSample build/cpu.jfr
 对 deadlock/retention 重复记录，找 monitor、分配等事件。事件是否被启用、阈值和采样窗口会影响结果；没有事件不能证明从未发生。
 
 **验收：** 用五句证据链完成结论：症状、候选原因、关键证据、排除项、修复后同负载验证。不要把源码中的模式名称当作诊断过程。
+
+**完成后：** [返回第 12 章验收](CURRICULUM.md#第-12-章生产诊断与综合推理)。
 
 ## 原生命令（Linux/macOS）
 

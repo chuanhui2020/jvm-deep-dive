@@ -1,5 +1,7 @@
 # 实验验证记录
 
+**导航：** [学习路线](README.md) · [完整课程](CURRICULUM.md)
+
 ## 环境与范围
 
 验证日期：2026-11-11。Windows 64 位，Oracle HotSpot 25.0.5.0.2+1-LTS-2，使用 javac --release 25，生成 class 主版本 69。实验生产源码无第三方依赖，不使用预览特性；独立 Maven 项目的测试使用 JUnit Jupiter。

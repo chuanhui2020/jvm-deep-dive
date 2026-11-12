@@ -1,8 +1,25 @@
 # GC 异常实验：从故障信号到修复对照
 
+**导航：** [学习路线](../README.md) · [第 11 章](../CURRICULUM.md#第-11-章oom栈溢出与内存预算) · [第 12 章](../CURRICULUM.md#第-12-章生产诊断与综合推理)
+
 这组实验补全“会讲 GC 机制”到“能排查异常”的实践。每个场景都是独立 Maven 项目，自带 Wrapper、源码、测试、Dockerfile 和 fault/fixed Job。它们不是生产调优模板，也不保证所有机器出现完全相同的周期数。
 
 本轮基线：Java SE/JDK 25、HotSpot；实现解释固定 `jdk-25-ga`。核对日期为 2026-11-12。规范不要求使用 G1/ZGC，也不规定本文的 GC 调度、日志或参数。[JVMS 25](https://docs.oracle.com/javase/specs/jvms/se25/html/index.html)
+
+## 学习顺序
+
+第 11 章完成步骤 1～5，第 12 章完成步骤 6。每篇按 **故障预测 → fault → 证据 → fixed → 面试追问** 推进。
+
+| 步骤 | 阅读 | 实验 | 所在主章 |
+| --- | --- | --- | --- |
+| 1 | [分配与保留](01-allocation-retention.md) | `gc-churn / gc-retention` | 11 |
+| 2 | [G1 退化](02-g1-pathologies.md) | `g1-evacuation / g1-humongous` | 11 |
+| 3 | [ZGC 等待](03-zgc-stall.md) | `zgc-stall` | 11 |
+| 4 | [加载器与元空间](04-metaspace.md) | `metaspace-leak` | 11 |
+| 5 | [容器内存预算](05-container-budget.md) | `container-budget` | 11 |
+| 6 | [CPU 配额](06-cpu-quota.md) | `cpu-throttle` | 12 |
+
+完成第 11 章的前 5 步后，回本章验收，再进入第 12 章。日志快照 [RESULTS](RESULTS.md) 在核对事件时按需查阅。
 
 ## 1. 先看八个场景与证据范围
 

@@ -6,7 +6,7 @@
 
 ## 内容导航
 
-- [章节课程](docs/CURRICULUM.md) · [基础详解](docs/foundations/README.md)
+- **[从这里开始：学习路线](docs/README.md)** · [完整课程](docs/CURRICULUM.md)
 - [G1 / 分代 ZGC](docs/gc/README.md) · [GC 异常实验](docs/gc-failures/README.md)
 - [Pod 部署与观察](docs/PODS.md) · [实验手册](docs/LABS.md)
 - [面试追问](docs/INTERVIEW.md) · [官方资料](docs/REFERENCES.md) · [验证记录](docs/VALIDATION.md)

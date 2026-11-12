@@ -1,5 +1,7 @@
 # 分代 ZGC：颜色、屏障与并发重定位
 
+**导航：** [学习路线](../README.md) · [专题顺序](README.md#阅读顺序) · [第 07 章](../CURRICULUM.md#第-07-章g1分代-zgc-与选择依据)
+
 前置：[F05](../foundations/05-gc.md)和 [G1](G1.md)。本篇固定 HotSpot `jdk-25-ga`，不是早期非分代 ZGC 的重新命名。JEP 439 用于理解设计，具体周期、颜色表示和调用链核对 25 源码；25 已继承非分代模式移除的变化。[JEP 439](https://openjdk.org/jeps/439)、[JEP 490](https://openjdk.org/jeps/490)
 
 ## 1. ZGC 要把哪些工作移出长暂停
@@ -226,3 +228,7 @@ flowchart TD
 - 性能上需要说明快路径、首次慢处理、缓冲、并发工作与容量余量各自的成本。
 
 这条推演讲不完整时，先回到对应源码片段，再做 [日志实验](EXPERIMENTS.md)和[专题追问](INTERVIEW.md)。屏障过程不能从普通 Java 日志中逐次直接看见，运行结果只验证负载可执行和可观察的 GC 行为。
+
+---
+
+[上一步：G1 周期实验](EXPERIMENTS.md#2-g1观察完整周期) · [学习路线](../README.md) · [下一步：ZGC 周期实验](EXPERIMENTS.md#3-分代-zgc读清周期和代)

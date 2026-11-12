@@ -1,5 +1,7 @@
 # 堆没有满，容器为什么 OOMKilled？
 
+**导航：** [学习路线](../README.md) · [故障顺序](README.md#学习顺序) · [第 11 章](../CURRICULUM.md#第-11-章oom栈溢出与内存预算)
+
 本实验把 Java 堆、直接内存预算和容器内存上限分开观察。**当前只完成本机小负载验证，未在真实 cgroup 中验证 OOMKilled。** 故障清单必须在独立测试集群运行后才能填写容器结论。
 
 ## 1. 三个不同的上限
@@ -77,3 +79,7 @@ kubectl --context jvm-lab -n jvm-labs cp -c evidence "${labPod}:/data" build/con
 **E20：退出码 137，没有 heap dump，能确定是堆泄漏吗？** 不能。先查容器 reason、事件与时间线；解释内核 kill 不走 Java OOM 路径，再按存活期监控定位内存来源。
 
 **E21：为什么设置 MaxDirectMemorySize 仍可能超容器上限？** 它只约束特定直接缓冲区分配，其他 native 内存仍消耗预算；本实验还故意将它设置得高于容器总上限。说明修复的资源代价和同限制下的回归方法。
+
+---
+
+[上一步：加载器与元空间](04-metaspace.md) · [学习路线](../README.md) · [返回本章验收](../CURRICULUM.md#第-11-章oom栈溢出与内存预算) · [下一章：12 生产诊断](../CURRICULUM.md#第-12-章生产诊断与综合推理)

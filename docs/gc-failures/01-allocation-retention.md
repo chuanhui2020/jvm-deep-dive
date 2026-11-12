@@ -1,5 +1,7 @@
 # 分配率高与保留泄漏：相似曲线，不同根因
 
+**导航：** [学习路线](../README.md) · [故障顺序](README.md#学习顺序) · [第 11 章](../CURRICULUM.md#第-11-章oom栈溢出与内存预算)
+
 实验默认按 [Minikube Pod 主流程](../PODS.md)执行；先创建学习环境，再构建单个镜像。日志跟随退出后，先导出证据再删除 fault Job。
 
 本篇对应两个独立项目：[gc-churn](../../labs/gc-churn/README.md)与 [gc-retention](../../labs/gc-retention/README.md)。先复习 [根可达性](../foundations/04-reachability.md)和 [G1 周期](../gc/G1.md)。
@@ -114,3 +116,7 @@ fault 会捕获预期 OOM，释放诊断预留后输出原始消息与保留块�
 `GC overhead limit exceeded` 是特定实现/策略的错误条件，不是“GC 次数一多就必然抛出”的统一异常。不要把经典阈值口诀套给所有收集器；还要核对启用的收集器、选项与连续回收收益。[jdk-25-ga 自适应策略](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/shared/adaptiveSizePolicy.cpp)
 
 程序的 gcCount/gcTimeMs 来自 MXBean 累计口径。不同收集器的并发、代际和重叠工作不宜直接相加后解释成业务暂停总时长。要分析延迟，回到具体暂停、时间窗口、CPU 和请求链路。
+
+---
+
+[前置：第 11 章](../CURRICULUM.md#第-11-章oom栈溢出与内存预算) · [学习路线](../README.md) · [返回本章验收](../CURRICULUM.md#第-11-章oom栈溢出与内存预算) · [下一步：G1 退化](02-g1-pathologies.md)

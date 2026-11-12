@@ -1,5 +1,7 @@
 # 加载器保留：堆没有满，Metaspace 却耗尽
 
+**导航：** [学习路线](../README.md) · [故障顺序](README.md#学习顺序) · [第 11 章](../CURRICULUM.md#第-11-章oom栈溢出与内存预算)
+
 实验默认按 [Minikube Pod 主流程](../PODS.md)执行；先创建学习环境，再构建单个镜像。日志跟随退出后，先导出证据再删除 fault Job。
 
 独立项目：[metaspace-leak](../../labs/metaspace-leak/README.md)。先复习 [类身份与卸载](../foundations/03-class-loading.md)。这里观察类元数据预算与加载器生命周期，不把它误称为普通 byte[] 堆泄漏。
@@ -76,3 +78,7 @@ fault 中还有为诊断而显式请求的 GC。统计 Full 时要看 cause，�
 **E17：不再 new 旧类实例，类就能卸载吗？** 还要检查定义加载器及相关保留路径；没有业务实例只是一个线索，不足以证明满足卸载条件。
 
 **E18：fixed 仍然 Full，怎样证明有所改善？** 对齐同样的定义次数，检查是否仍耗尽、缓存是否有界、类能否卸载和元空间是否趋稳；不能把 GC 零次当唯一成功标准。
+
+---
+
+[上一步：ZGC 等待](03-zgc-stall.md) · [学习路线](../README.md) · [返回本章验收](../CURRICULUM.md#第-11-章oom栈溢出与内存预算) · [下一步：容器内存预算](05-container-budget.md)

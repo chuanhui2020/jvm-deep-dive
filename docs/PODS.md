@@ -1,5 +1,7 @@
 # 以 Minikube Pod 为核心的 JVM 实验
 
+**导航：** [学习路线](README.md) · [完整课程](CURRICULUM.md)
+
 主流程是：**读机制 → 预测 → 节点内构建独立镜像 → 部署单个 Job → 工作期观测 → 导出证据 → 改一个条件重放**。宿主机只需 Minikube、kubectl 和可用驱动；镜像中提供完整 JDK 25 与 Maven。PowerShell 脚本是可选的本机开发工具。
 
 所有示例从仓库根目录执行。使用专用 profile/context `jvm-lab`、namespace `jvm-labs`，命令显式选择目标，不依赖终端的当前集群。

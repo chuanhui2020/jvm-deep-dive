@@ -1,5 +1,7 @@
 # G1：疏散失败、Full GC 与大对象连续空间
 
+**导航：** [学习路线](../README.md) · [故障顺序](README.md#学习顺序) · [第 11 章](../CURRICULUM.md#第-11-章oom栈溢出与内存预算)
+
 实验默认按 [Minikube Pod 主流程](../PODS.md)执行；先创建学习环境，再构建单个镜像。日志跟随退出后，先导出证据再删除 fault Job。
 
 本篇把 [G1 实现详解](../gc/G1.md)中的目的空间、CSet、转发和 humongous 规则连到实际故障。两个独立项目分别是 [g1-evacuation](../../labs/g1-evacuation/README.md)和 [g1-humongous](../../labs/g1-humongous/README.md)。
@@ -116,3 +118,7 @@ fixed 保留同样的初始锚数组和总请求 payload，将新请求分成 25
 **E11：看到 System.gc 的 Full，就能解释本例所有 Full 吗？** 不能。按标记和 cause 分开准备阶段与请求阶段，不能把一次显式调用归因给后续所有事件。
 
 **E12：分段修复后能否宣称算法更快？** 只能说明这组分配形态下减少了额外处理；还要考虑索引访问、复制次数、对象数量和真实负载指标。
+
+---
+
+[上一步：分配与保留](01-allocation-retention.md) · [学习路线](../README.md) · [返回本章验收](../CURRICULUM.md#第-11-章oom栈溢出与内存预算) · [下一步：ZGC 等待](03-zgc-stall.md)
