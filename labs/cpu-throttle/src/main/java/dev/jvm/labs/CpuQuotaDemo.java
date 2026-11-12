@@ -25,6 +25,7 @@ public final class CpuQuotaDemo {
         System.out.println("cpuStatBefore=" + cpuStat());
         roots = new byte[workers][64][];
         var failure = new AtomicReference<Throwable>();
+        long[] counts = new long[workers];
         Thread[] threads = new Thread[workers];
         long started = System.nanoTime();
         for (int w = 0; w < workers; w++) {
@@ -40,6 +41,8 @@ public final class CpuQuotaDemo {
                     }
                 } catch (Throwable error) {
                     failure.compareAndSet(null, error);
+                } finally {
+                    counts[worker] = n;
                 }
             });
             threads[w].start();
@@ -52,7 +55,15 @@ public final class CpuQuotaDemo {
             if (samples < lag.length) lag[samples++] = Math.max(0, System.nanoTime() - before - 10_000_000L);
         }
         for (Thread thread : threads) thread.join();
+        long elapsedNanos = System.nanoTime() - started;
         if (failure.get() != null) throw new IllegalStateException("load worker failed", failure.get());
+        long allocatedBlocks = 0;
+        for (long count : counts) allocatedBlocks += count;
+        double allocatedMiB = allocatedBlocks / 32.0;
+        System.out.printf(java.util.Locale.ROOT,
+                "allocatedBlocks=%d allocatedPayloadMiB=%.3f elapsedMillis=%d payloadMiBPerSecond=%.3f%n",
+                allocatedBlocks, allocatedMiB, elapsedNanos / 1_000_000,
+                allocatedMiB / (elapsedNanos / 1_000_000_000.0));
         Arrays.sort(lag, 0, samples);
         long p99 = samples == 0 ? 0 : lag[Math.min(samples - 1, (int) Math.ceil(samples * 0.99) - 1)];
         System.out.printf("heartbeatSamples=%d heartbeatLagP99Micros=%d%n", samples, p99 / 1000);

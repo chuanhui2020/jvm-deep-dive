@@ -78,3 +78,24 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.
 - 一键取证脚本已验证含空格路径、启动延迟/结束保留、超时杀子进程并保留 result.json，以及拒绝覆盖非空目录。普通结果、日志轮转和 OOM 快照路径分组隔离。
 - 检查本地链接和章节锚点、代码块、24 题编号；核对 16 个外部来源页面的 20 处引用可访问，JDK 25 链接未重定向到 26。
 - container-budget 只在本机验证 fixed 8MiB；cpu-throttle 只验证 fixed 1 秒/1 线程。不提供 cgroup 限制的本机脚本不证明容器故障。Docker 引擎与 Kubernetes API 不可连接，本轮没有容器镜像构建、OOMKilled 或真实 CPU throttling 实测。
+
+## 第二轮 Review 与改进（2026-11-12）
+
+本轮检查新增八组故障实现、脚本的路径和环境、取证计数、对照指标以及清单/文档的一致性，修复以下四项：
+
+| 问题 | 原影响 | 修改与证据 |
+| --- | --- | --- |
+| 相对 EvidenceDir 用 .NET 进程目录解析 | Set-Location 后可能把证据写到另一目录 | 改用 PowerShell 路径解析；在切换目录后验证含空格路径、参数内引号及结果位置 |
+| JDK 检查/构建和通用回归继承 JVM 环境参数 | 可能在实验前因环境提示失败，或混入另一个收集器 | 三个启动/回归入口统一隔离 JAVA_TOOL_OPTIONS、JDK_JAVA_OPTIONS、_JAVA_OPTIONS；正常及错误返回均恢复终端环境 |
+| 日志不存在时计数也为零 | 缺失证据容易被误读为未发生故障 | 增加日志可用标记，缺失时计数为 null；补充进程完成、工作负载标记、超时与时间窗口字段 |
+| CPU 实验只有 heartbeat 延迟 | 无法区分同时间窗内完成的实际分配工作量 | 增加线程计数汇总、经过时间和 payload MiB/s；仍不当作业务吞吐或业务 P99 |
+
+验证结果：
+
+- 根 `./mvnw.cmd -B -ntp verify`：22 个独立项目成功，46 项测试通过；CPU 测试补充工作量/时间/速率有效性检查，不断言性能阈值。
+- 故意预设 JAVA_TOOL_OPTIONS 为 UseSerialGC 后运行 `scripts/verify-labs.ps1`，22 项入口仍通过，调用终端原变量恢复。新取证回归还同时注入冲突收集器和过小堆，验证三个环境变量都不进入 JDK 检查或目标 JVM。
+- 新增可直接运行的 [verify-gc-evidence.ps1](../scripts/verify-gc-evidence.ps1)：检查计数样本、日志禁用、路径/引号、保留窗口、环境隔离与恢复、超时后落盘、非法负载退出和非空目录防覆盖。全部通过，未故意触发内存耗尽。
+- 提取后的计数逻辑重新读取上一轮 14 次真实运行的完整保留日志，五项信号计数均与原记录一致。
+- 检查本地文件/锚点、代码块、24 题编号与 Pod 资源/参数一致性；git diff --check 通过。
+
+剩余验证边界：仍未取得真实 Kubernetes/cgroup 运行证据，也未在 Linux/macOS 实测 PowerShell 启动路径。自动化检查只证明已列出的本机行为，不能据此宣布所有部署环境已验证。

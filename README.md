@@ -49,6 +49,7 @@ javac -version
 ./scripts/run-lab.ps1 init
 ./scripts/run-lab.ps1 layout
 ./scripts/verify-labs.ps1
+./scripts/verify-gc-evidence.ps1
 ~~~
 
 每个实验都是独立 Maven 项目：`labs/<实验名>/` 内含自己的 `pom.xml`、Maven Wrapper、源码、测试、Dockerfile 和 Pod Job 配置。根 POM 仅聚合构建，不是各项目的 parent；复制一个项目到仓库外也能独立构建。所有项目产物统一命名为各自的 `target/lab.jar`。

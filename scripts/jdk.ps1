@@ -1,3 +1,20 @@
+function Invoke-WithCleanJavaEnvironment {
+    param([scriptblock]$Action)
+
+    $previous = @{}
+    foreach ($key in @('JAVA_TOOL_OPTIONS', 'JDK_JAVA_OPTIONS', '_JAVA_OPTIONS')) {
+        $previous[$key] = [Environment]::GetEnvironmentVariable($key, 'Process')
+        [Environment]::SetEnvironmentVariable($key, $null, 'Process')
+    }
+    try {
+        & $Action
+    } finally {
+        foreach ($key in $previous.Keys) {
+            [Environment]::SetEnvironmentVariable($key, $previous[$key], 'Process')
+        }
+    }
+}
+
 function Get-LabJdk {
     $suffix = if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) { '.exe' } else { '' }
     if ($env:JAVA_HOME) {

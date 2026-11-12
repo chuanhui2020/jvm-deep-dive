@@ -18,13 +18,20 @@ class ScenarioTest {
     @Test
     void fixedScenarioCompletesInAnIsolatedJvm() throws Exception {
         Result result = run(new String[] {
-        "fixed",
-        "1",
-        "1"
+            "fixed",
+            "1",
+            "1"
         });
         assertEquals(0, result.exitCode(), result.output());
         assertTrue(result.output().contains("mode=fixed"), result.output());
         assertTrue(result.output().contains("status=completed"), result.output());
+        var progress = java.util.regex.Pattern.compile(
+                "allocatedBlocks=(\\d+) allocatedPayloadMiB=([0-9.]+) elapsedMillis=(\\d+) payloadMiBPerSecond=([0-9.]+)")
+                .matcher(result.output());
+        assertTrue(progress.find(), result.output());
+        assertTrue(Long.parseLong(progress.group(1)) > 0, result.output());
+        assertTrue(Long.parseLong(progress.group(3)) > 0, result.output());
+        assertTrue(Double.parseDouble(progress.group(4)) > 0, result.output());
     }
 
     @Test

@@ -51,6 +51,18 @@
 
 目录必须新建或为空，避免旧 dump/轮转文件混入另一组结果。脚本隔离 JAVA_TOOL_OPTIONS、JDK_JAVA_OPTIONS、_JAVA_OPTIONS；自定义 JVM 参数显式通过 `-JvmArgs` 追加。
 
+隔离覆盖 JDK 检查、Maven 构建和实际实验，返回或抛错时恢复调用终端的原环境；通用 run-lab 与 verify-labs 采用相同规则，避免系统预设收集器混入对照。相对 EvidenceDir 按 PowerShell 当前目录解析，支持含空格路径。[JDK 25 启动选项](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html)
+
+result.json 的 `completed` 只说明子进程在超时前退出；`workloadCompleted` 表示程序输出了完成标记，`exitCode` 和 `caughtOom` 仍需分别检查。`timedOut`、开始时间和经过毫秒用于核对窗口。`gcLogEvidenceAvailable=false` 时事件计数为 null，表示日志证据不可用；有 GC 日志且某个事件未观察到，才记录零。即使日志存在，用户覆盖日志级别/选择器或轮转也会缩小证据范围，不能据零推断绝无对应事件。
+
+构建后可执行可重复的取证回归，无需 Pester，也不触发故意耗尽内存的负载：
+
+```powershell
+./scripts/verify-gc-evidence.ps1
+```
+
+该检查覆盖完成行与开始行计数口径、ZGC 统计表和事件的区分、无日志、相对路径/引号、环境隔离及恢复、观察窗口、超时和防覆盖。验证证据仍写入忽略的 build/。
+
 ```powershell
 # 先构建后可跳过重复构建；这里 LabArgs 不包含 mode，脚本会自动补上
 ./scripts/run-gc-fault.ps1 -Lab zgc-stall -Mode fixed -SkipBuild -LabArgs @('5','4','2','64')

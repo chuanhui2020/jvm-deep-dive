@@ -48,6 +48,8 @@ delta_throttled_usec = end.throttled_usec - start.throttled_usec
 
 ## 4. 正确解读 heartbeat 与 JFR
 
+程序同时输出 `allocatedBlocks`、`allocatedPayloadMiB`、`elapsedMillis`、`payloadMiBPerSecond`。计数由各分配线程在结束时汇总，经过时间覆盖线程启动到全部 join 完成；payload 不含对象头、环引用、诊断与 JVM 自身分配。因此可辅助判断限流时完成的分配工作量，不能当作真实业务吞吐。不同 CPU 预算下 GC 次数应结合这个工作量解释。
+
 程序输出的是 heartbeat 样本的额外唤醒延迟分位数，即睡眠实际经过时间减去目标 10ms，最低取零。**它不是业务 P99，也不是 GC pause P99**。它会同时受到 OS 调度、GC、CPU quota 和运行环境影响；受限期间拿不到 CPU 时样本也会稀疏，不应据此推算真实请求分布。
 
 JFR 中执行采样和线程状态有助于发现热点、锁及停顿，但采样空白本身不能证明 throttling。必须把 cgroup 计数、GC/safepoint 时间、吞吐和 heartbeat 对齐；避免同时对一组开高开销录制、另一组不开。[JDK 25 排障指南](https://docs.oracle.com/en/java/javase/25/troubleshoot/index.html)
