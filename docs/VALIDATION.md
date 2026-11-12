@@ -67,3 +67,14 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.
 - 打包后的 `PodLauncher → AllocationPressureDemo → cycles` 路径在本地运行，验证参数转发、实际 PID 的 jcmd 连接和保留窗口；成功 JFR.dump 并通过 jfr summary 读取录制，观测到 GC 与对象分配采样事件。
 - 两份 collector-specific Job 清单已解析，检查独立名称、完整 JVM 参数、cycles 参数、资源和观察窗口。33 个外部来源页面的 44 处引用及本地链接/章节锚点通过检查。
 - 本轮未构建或运行 Docker 镜像/Pod，容器侧验证仍未完成；Full GC、Allocation Stall、OOM 和所有重定位退化路径也未由这组运行复现。机制解释与运行证据分别标明，原始日志/JFR 保存在忽略的 build/，摘录和命令见 [专题实验](gc/EXPERIMENTS.md)。
+
+## GC 异常与修复对照验证（2026-11-12）
+
+- 新增 8 个独立 Maven 项目，合计 22 个；新增 6 篇故障详解、专题入口、真实快照及 E01～E24 追问，接入主课程 06/07/11/12、实验、面试和个人掌握表。
+- `./mvnw.cmd -B -ntp verify`：22 个项目成功，46 项测试通过；`scripts/verify-labs.ps1` 的全部 22 个打包入口与受限 fixed 检查通过。将 metaspace-leak 的 Wrapper、POM 和 src 复制到仓库外的隔离目录后独立 verify 成功。
+- 六组 JVM fault/fixed 均实际运行并保存证据，复现有界分配下的 GC 退化、静态保留堆 OOM、G1 Evacuation Failure/Full、大对象额外 Full、ZGC Allocation Stall 与 Metaspace OOM。精确计数及解释见 [真实结果](gc-failures/RESULTS.md)，不作为跨平台断言。
+- 特别记录：缓存 fixed 仍有一次疏散失败；元空间 fixed 仍有合理 Full；ZGC 仅限速仍有等待，降低存活集后本次为零；大对象布置阶段显式 Full 与分配压力 Full 分开统计。
+- 解析并核对八组 16 份 fault/fixed Job、8 份 fault 快捷副本及可选证据容器清单：参数与场景目录一致、无自动重试、资源和只读配置明确。CPU 两组 request 均 100m，仅 limit 从 100m 改到 1 CPU。
+- 一键取证脚本已验证含空格路径、启动延迟/结束保留、超时杀子进程并保留 result.json，以及拒绝覆盖非空目录。普通结果、日志轮转和 OOM 快照路径分组隔离。
+- 检查本地链接和章节锚点、代码块、24 题编号；核对 16 个外部来源页面的 20 处引用可访问，JDK 25 链接未重定向到 26。
+- container-budget 只在本机验证 fixed 8MiB；cpu-throttle 只验证 fixed 1 秒/1 线程。不提供 cgroup 限制的本机脚本不证明容器故障。Docker 引擎与 Kubernetes API 不可连接，本轮没有容器镜像构建、OOMKilled 或真实 CPU throttling 实测。

@@ -1,4 +1,4 @@
-﻿# 在 Pod 中独立观察 JVM 实验
+# 在 Pod 中独立观察 JVM 实验
 
 每个 `labs/<实验名>/` 是完整且独立的 Maven 项目。根 POM 仅聚合构建；没有父 POM、兄弟模块或私有依赖。需要 JDK 25；每个项目的 Wrapper 固定使用 Maven 3.9.16。运行时只需本项目的 `target/lab.jar`，JUnit 仅用于测试。
 
@@ -140,3 +140,9 @@ kubectl apply -f labs/gc/k8s/job.yaml
 ```
 
 不要把 Job 的完成状态当作学习验收；仍应解释实验的参数、机制、观察结果与边界。
+
+## 八个故障场景的独立 Pod
+
+详见 [GC 异常专题](gc-failures/README.md)。新增 gc-churn、gc-retention、g1-evacuation、g1-humongous、zgc-stall、metaspace-leak、container-budget、cpu-throttle；项目总数 22。每项包含独立镜像和 job-fault.yaml/job-fixed.yaml，job.yaml 是 fault 快捷副本，仅应用需要的一份清单。
+
+通常使用 1 CPU/512Mi 上限；cpu-throttle 两组 request 同为 100m，limit 分别 100m 和 1 CPU。JVM 堆为 32/64/128Mi，不等于容器总预算。container-budget 另有可选证据容器清单，主容器被杀后仍可导出共享日志，具体生命周期与资源差异见 [容器手册](gc-failures/05-container-budget.md)。

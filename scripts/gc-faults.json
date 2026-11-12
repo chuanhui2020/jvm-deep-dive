@@ -1,0 +1,211 @@
+{
+  "gc-churn": {
+    "main": "AllocationChurnDemo",
+    "title": "高分配率与低回收后占用",
+    "jvmArgs": [
+      "-Xms32m",
+      "-Xmx32m",
+      "-XX:+UseG1GC"
+    ],
+    "faultArgs": [
+      "fault",
+      "5",
+      "4",
+      "4"
+    ],
+    "fixedArgs": [
+      "fixed",
+      "5",
+      "4",
+      "4"
+    ],
+    "smokeArgs": [
+      "fixed",
+      "1",
+      "1",
+      "4"
+    ]
+  },
+  "gc-retention": {
+    "main": "RetentionLeakDemo",
+    "title": "静态保留链与堆 OOM",
+    "jvmArgs": [
+      "-Xms32m",
+      "-Xmx32m",
+      "-XX:+UseG1GC"
+    ],
+    "faultArgs": [
+      "fault",
+      "2048",
+      "64",
+      "1"
+    ],
+    "fixedArgs": [
+      "fixed",
+      "2048",
+      "64",
+      "1"
+    ],
+    "smokeArgs": [
+      "fixed",
+      "32",
+      "64",
+      "0"
+    ]
+  },
+  "g1-evacuation": {
+    "main": "G1EvacuationDemo",
+    "title": "高存活率、疏散失败与 Full GC",
+    "jvmArgs": [
+      "-Xms64m",
+      "-Xmx64m",
+      "-XX:+UseG1GC",
+      "-XX:G1HeapRegionSize=1m",
+      "-XX:G1ReservePercent=0",
+      "-XX:MaxTenuringThreshold=1",
+      "-XX:-G1UseAdaptiveIHOP",
+      "-XX:InitiatingHeapOccupancyPercent=90"
+    ],
+    "faultArgs": [
+      "fault",
+      "40"
+    ],
+    "fixedArgs": [
+      "fixed",
+      "40"
+    ],
+    "smokeArgs": [
+      "fixed",
+      "2",
+      "2",
+      "1"
+    ]
+  },
+  "g1-humongous": {
+    "main": "HumongousFragmentationDemo",
+    "title": "大对象连续区域与分段对照",
+    "jvmArgs": [
+      "-Xms64m",
+      "-Xmx64m",
+      "-XX:+UseG1GC",
+      "-XX:G1HeapRegionSize=1m"
+    ],
+    "faultArgs": [
+      "fault",
+      "48",
+      "20"
+    ],
+    "fixedArgs": [
+      "fixed",
+      "48",
+      "20"
+    ],
+    "smokeArgs": [
+      "fixed",
+      "8",
+      "1"
+    ]
+  },
+  "zgc-stall": {
+    "main": "ZgcAllocationStallDemo",
+    "title": "分代 ZGC 分配等待",
+    "jvmArgs": [
+      "-Xms32m",
+      "-Xmx32m",
+      "-XX:+UseZGC",
+      "-XX:ConcGCThreads=1",
+      "-XX:ParallelGCThreads=1"
+    ],
+    "faultArgs": [
+      "fault",
+      "5",
+      "16",
+      "2",
+      "64"
+    ],
+    "fixedArgs": [
+      "fixed",
+      "5",
+      "4",
+      "2",
+      "64"
+    ],
+    "smokeArgs": [
+      "fixed",
+      "1",
+      "1",
+      "1",
+      "16"
+    ]
+  },
+  "metaspace-leak": {
+    "main": "MetaspaceLeakDemo",
+    "title": "加载器保留与 Metaspace OOM",
+    "jvmArgs": [
+      "-Xms32m",
+      "-Xmx64m",
+      "-XX:+UseG1GC",
+      "-XX:MaxMetaspaceSize=16m"
+    ],
+    "faultArgs": [
+      "fault",
+      "12000",
+      "0"
+    ],
+    "fixedArgs": [
+      "fixed",
+      "12000",
+      "0"
+    ],
+    "smokeArgs": [
+      "fixed",
+      "64",
+      "0"
+    ]
+  },
+  "container-budget": {
+    "main": "ContainerBudgetDemo",
+    "title": "堆外预算与容器 OOMKilled",
+    "jvmArgs": [
+      "-Xms64m",
+      "-Xmx64m",
+      "-XX:+UseG1GC",
+      "-XX:MaxDirectMemorySize=768m"
+    ],
+    "faultArgs": [
+      "fault"
+    ],
+    "fixedArgs": [
+      "fixed"
+    ],
+    "smokeArgs": [
+      "fixed",
+      "8"
+    ]
+  },
+  "cpu-throttle": {
+    "main": "CpuQuotaDemo",
+    "title": "CPU 配额、GC 与调度延迟",
+    "jvmArgs": [
+      "-Xms128m",
+      "-Xmx128m",
+      "-XX:+UseG1GC",
+      "-XX:ActiveProcessorCount=1"
+    ],
+    "faultArgs": [
+      "fault",
+      "30",
+      "2"
+    ],
+    "fixedArgs": [
+      "fixed",
+      "30",
+      "2"
+    ],
+    "smokeArgs": [
+      "fixed",
+      "1",
+      "1"
+    ]
+  }
+}

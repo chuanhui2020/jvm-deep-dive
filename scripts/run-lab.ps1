@@ -1,6 +1,5 @@
 param(
-    [ValidateSet('env', 'bytecode', 'init', 'loader', 'layout', 'references', 'gc',
-        'jit', 'jmm', 'virtual', 'heap-oom', 'direct', 'stack', 'diagnose')]
+    [ValidateSet('env', 'bytecode', 'init', 'loader', 'layout', 'references', 'gc', 'jit', 'jmm', 'virtual', 'heap-oom', 'direct', 'stack', 'diagnose', 'gc-churn', 'gc-retention', 'g1-evacuation', 'g1-humongous', 'zgc-stall', 'metaspace-leak', 'container-budget', 'cpu-throttle')]
     [string]$Lab = 'env',
     [string[]]$JvmArgs = @(),
     [string[]]$LabArgs = @(),
@@ -36,6 +35,11 @@ switch ($Lab) {
         $defaults += '-Djdk.virtualThreadScheduler.parallelism=1'
         $defaults += '-Djdk.virtualThreadScheduler.maxPoolSize=1'
     }
+}
+$faultCatalog = Get-Content (Join-Path $PSScriptRoot 'gc-faults.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+$faultEntry = $faultCatalog.PSObject.Properties[$Lab]
+if ($faultEntry) {
+    $defaults = @($faultEntry.Value.jvmArgs)
 }
 $launch = @($defaults) + @("-Djava.io.tmpdir=$temporary") + @($JvmArgs) + @('-jar', $jar) + @($LabArgs)
 & $jdk['java'] @launch

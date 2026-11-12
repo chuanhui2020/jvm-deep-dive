@@ -93,3 +93,12 @@ rg -n "SATB|satb" src/hotspot/share/gc/g1
 经典 JVM 书适合建立概念，但 CMS、永久代、偏向锁、JDK 8 GC 默认项与早期虚拟线程结论都要回到 25 核对。不要用书的出版年份替代技术结论验证。
 
 主线不需安装第三方库。后续需要正式基准时用 JMH，研究并发合法结果时用 JCStress，看堆根路径可用 MAT，看字段偏移再选支持当前构建的 JOL。每引入一个工具，先写清要回答的问题和它不能回答的问题。
+
+## GC 异常取证对应入口
+
+[故障专题](gc-failures/README.md)把 JDK 25 故障文档和八个可执行实验对照：
+
+- [JDK 25 内存排障](https://docs.oracle.com/en/java/javase/25/troubleshoot/troubleshooting-memory-leaks.html)：堆、直接内存和元空间错误的分类。
+- [G1 25 调优](https://docs.oracle.com/en/java/javase/25/gctuning/garbage-first-garbage-collector-tuning.html)：Evacuation Failure、大对象和 Full 的取证入口。
+- [固定 jdk-25-ga ZPageAllocator](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/z/zPageAllocator.cpp)：分配等待实现，配合 ZGC 专题调用链阅读。
+- [Linux cgroup v2](https://docs.kernel.org/admin-guide/cgroup-v2.html)及 [Kubernetes 资源限制](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/)：cpu.stat、memory.events、预算与容器状态；它们属于操作系统/编排语义，不是 JVMS 规定。

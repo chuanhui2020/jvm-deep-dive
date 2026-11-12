@@ -43,3 +43,7 @@
 6. 完成专题追问并指向相关源文件，而不是只复述 SATB、着色指针等名称。
 
 本项目不把修改业务引用的 Java 压力程序称为“手写 GC”。新增 cycles 负载用于观察真实 HotSpot 的行为；它不能直接展示每一次屏障或替代对实现正确性的分析。
+
+## 补充：故障与修复对照
+
+[GC 异常专题](../gc-failures/README.md)提供八个独立项目和 E01～E24 追问，补齐 G1 转移失败/大对象、ZGC Allocation Stall、保留泄漏及容器预算。[真实快照](../gc-failures/RESULTS.md)已复现 JVM 退化信号；容器 OOMKilled 和 CPU 限流另标为待实测，不与 cycles 的正常运行混淆。

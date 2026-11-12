@@ -12,5 +12,13 @@
   "heap-oom": "HeapOomDemo",
   "direct": "DirectMemoryDemo",
   "stack": "StackDepthDemo",
-  "diagnose": "DiagnosticsDemo"
+  "diagnose": "DiagnosticsDemo",
+  "gc-churn": "AllocationChurnDemo",
+  "gc-retention": "RetentionLeakDemo",
+  "g1-evacuation": "G1EvacuationDemo",
+  "g1-humongous": "HumongousFragmentationDemo",
+  "zgc-stall": "ZgcAllocationStallDemo",
+  "metaspace-leak": "MetaspaceLeakDemo",
+  "container-budget": "ContainerBudgetDemo",
+  "cpu-throttle": "CpuQuotaDemo"
 }

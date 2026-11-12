@@ -71,3 +71,7 @@
 | 3 | 能用真实日志排除假设，提出可比对照和资源代价 |
 
 基础机制至少达到 2；综合题目标为 3。把 [实验证据](EXPERIMENTS.md)路径和自己最弱的两条链写入 [个人进度](../PROGRESS.md)，不要用文档篇幅或 GC 测试通过替代掌握度。
+
+## 补充：故障与修复对照
+
+[GC 异常专题](../gc-failures/README.md)提供八个独立项目和 E01～E24 追问，补齐 G1 转移失败/大对象、ZGC Allocation Stall、保留泄漏及容器预算。[真实快照](../gc-failures/RESULTS.md)已复现 JVM 退化信号；容器 OOMKilled 和 CPU 限流另标为待实测，不与 cycles 的正常运行混淆。

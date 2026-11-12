@@ -85,4 +85,9 @@ if ($LASTEXITCODE -ne 0) { throw 'javap failed' }
 foreach ($expected in @('major version: 69', 'ACC_SYNCHRONIZED', 'monitorenter', 'monitorexit', 'ACC_VOLATILE')) {
     Assert-Text ($bytecode -join [Environment]::NewLine) $expected
 }
-Write-Output 'PASS: all 14 labs; bytecode, initialization, class identity, memory, concurrency and diagnostics checked.'
+$faultCatalog = Get-Content (Join-Path $PSScriptRoot 'gc-faults.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+foreach ($entry in $faultCatalog.PSObject.Properties) {
+    $scenario = $entry.Value
+    Assert-Text (Invoke-LabCheck $scenario.main -Flags @($scenario.jvmArgs) -Arguments @($scenario.smokeArgs)) 'status=completed'
+}
+Write-Output 'PASS: all 22 labs; core semantics and bounded fault-scenario controls checked.'

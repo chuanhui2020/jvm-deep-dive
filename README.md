@@ -84,3 +84,14 @@ Linux/macOS 可使用 [实验手册中的原生命令](docs/LABS.md#原生命令
 本机测试结果与适用边界见 [验证记录](docs/VALIDATION.md)。
 
 先从第 01 章开始。每章最后的验收题答不清时，回到该章实验改变一个条件，形成自己的解释。
+
+## GC 异常与面试排障
+
+新增 [GC 异常专题](docs/gc-failures/README.md)：8 个独立 Maven 项目，使实验总数达到 22 个。覆盖分配抖动、静态缓存保留、G1 疏散失败/大对象、ZGC Allocation Stall、加载器泄漏、容器内存和 CPU 配额。每项有 fault/fixed 对照、独立镜像与 Pod 清单，附 24 个面试追问及 [真实验证快照](docs/gc-failures/RESULTS.md)。
+
+```powershell
+./scripts/run-gc-fault.ps1 -Lab g1-evacuation -Mode fault
+./scripts/run-gc-fault.ps1 -Lab g1-evacuation -Mode fixed
+```
+
+容器 OOMKilled 和 CPU throttling 尚待真实集群验证；本机已复现的 JVM 信号与容器待观察项分别记录。

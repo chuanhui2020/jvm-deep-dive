@@ -114,6 +114,8 @@ flowchart LR
 
 ## 第 06 章：GC 共性——分代、屏障与停顿
 
+故障扩展必读：[GC 异常与修复对照](gc-failures/01-allocation-retention.md). 按场景保留日志、提出候选原因，再用 fixed 验证。
+
 **基础详解（必读）：** [F05：算法、分代与跨代引用](foundations/05-gc.md)。
 
 **深入必读：** [G1 的 SATB、跨区入边与疏散](gc/G1.md)，并与 [分代 ZGC 的写侧记录与并发重定位](gc/GENERATIONAL_ZGC.md)对照，分别推演旧值、字段位置和对象地址。
@@ -131,6 +133,8 @@ GC 日志中的暂停和应用 P99 不是同一个指标；进入 safepoint 的�
 **验收：** 画出 old→young 例子解释记忆集；画一次并发改边解释为什么要屏障；区分分配速率、存活集、晋升与泄漏。
 
 ## 第 07 章：G1、分代 ZGC 与选择依据
+
+故障扩展必读：[GC 异常与修复对照](gc-failures/02-g1-pathologies.md). 按场景保留日志、提出候选原因，再用 fixed 验证。
 
 **基础详解（必读）：** [F05：现代收集器及版本边界](foundations/05-gc.md)。
 
@@ -198,6 +202,8 @@ JEP 491 使持有或等待 monitor 时的虚拟线程能够独立于 carrier 挂
 
 ## 第 11 章：OOM、栈溢出与内存预算
 
+故障扩展必读：[GC 异常与修复对照](gc-failures/04-metaspace.md). 按场景保留日志、提出候选原因，再用 fixed 验证。
+
 **基础详解（必读）：** [F06：内存故障分流与参数](foundations/06-diagnostics.md)。
 
 **核心问题：同样叫内存问题，为什么加 Xmx 可能完全无效？**
@@ -213,6 +219,8 @@ Java heap space、Direct buffer memory、Metaspace、unable to create native thr
 **验收：** 根据错误消息选择证据，区分容量不足与保留泄漏；解释为何直接内存 OOM 时 heap dump 里可能只有很小的包装对象。
 
 ## 第 12 章：生产诊断与综合推理
+
+故障扩展必读：[GC 异常与修复对照](gc-failures/README.md). 按场景保留日志、提出候选原因，再用 fixed 验证。
 
 **基础详解（必读）：** [F06：证据链与综合面试推理](foundations/06-diagnostics.md)。
 

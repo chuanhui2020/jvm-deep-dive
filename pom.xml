@@ -22,5 +22,13 @@
         <module>labs/direct</module>
         <module>labs/stack</module>
         <module>labs/diagnose</module>
+        <module>labs/gc-churn</module>
+        <module>labs/gc-retention</module>
+        <module>labs/g1-evacuation</module>
+        <module>labs/g1-humongous</module>
+        <module>labs/zgc-stall</module>
+        <module>labs/metaspace-leak</module>
+        <module>labs/container-budget</module>
+        <module>labs/cpu-throttle</module>
     </modules>
 </project>

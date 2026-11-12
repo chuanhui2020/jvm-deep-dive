@@ -74,3 +74,11 @@ JDK/VM/平台/完整命令：
 - [ ] 能独立完成 CPU、死锁、堆/堆外、加载器泄漏与尾延迟的证据链。
 - [ ] 能解释 JDK 25 对象头、虚拟线程、ZGC、AOT 的版本变化。
 - [ ] 能在不了解的问题上明确假设、边界与验证步骤，不编造绝对结论。
+
+## GC 异常诊断验收
+
+- [ ] 用 [分配/保留](gc-failures/01-allocation-retention.md)区分有界引用高分配与持续增长根集合。
+- [ ] 完成 [G1 退化](gc-failures/02-g1-pathologies.md)和 [ZGC 等待](gc-failures/03-zgc-stall.md)两组 fault/fixed，保存完整参数和原始日志。
+- [ ] 解释 [加载器根路径](gc-failures/04-metaspace.md)与类卸载，区分 OOM 前 dump 和诊断清理后的状态。
+- [ ] 在真实集群完成 [OOMKilled](gc-failures/05-container-budget.md)及 [CPU 配额](gc-failures/06-cpu-quota.md)的容器取证；本机 smoke 不代替此项。
+- [ ] 独立回答 E01～E24，给每个修复说明残余问题、资源代价和回归条件。
