@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="984" viewBox="0 0 900 984" role="img" aria-labelledby="title desc">
+<title id="title">从源码到解释执行与 JIT</title><desc id="desc">源码经过编译、加载、执行与优化；假设失效时从编译代码去优化，恢复执行。图中的箭头表示教学路径，不规定每个方法必须经历固定阶段。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b;text-anchor:middle}.edge{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.life{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:7 6}</style>
+<rect width="900" height="984" rx="12" fill="#fff"/>
+<text x="450.0" y="38" font-size="24" font-weight="bold">从源码到解释执行与 JIT</text>
+<path class="edge" d="M330 158 V192"/>
+<path class="edge" d="M330 270 V304"/>
+<path class="edge" d="M330 382 V416"/>
+<path class="edge" d="M330 494 V528"/>
+<path class="edge" d="M330 606 V640"/>
+<path class="edge" d="M330 718 V752"/>
+<path class="edge" d="M330 830 V864"/>
+<path class="edge" d="M542 791 H618"/>
+<path class="edge" d="M735 752 V567 H542"/>
+<g class="node"><rect x="120" y="82" width="420" height="74" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="330.0" y="126.0" font-size="20">Java 源码</text>
+</g>
+<g class="node"><rect x="120" y="194" width="420" height="74" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="330.0" y="238.0" font-size="20">javac</text>
+</g>
+<g class="node"><rect x="120" y="306" width="420" height="74" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="330.0" y="350.0" font-size="20">class 文件</text>
+</g>
+<g class="node"><rect x="120" y="418" width="420" height="74" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="330.0" y="448.0" font-size="20">加载与必要的</text>
+<text x="330.0" y="476.0" font-size="20">链接、初始化</text>
+</g>
+<g class="node"><rect x="120" y="530" width="420" height="74" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="330.0" y="560.0" font-size="20">解释执行</text>
+<text x="330.0" y="588.0" font-size="20">与运行时服务</text>
+</g>
+<g class="node"><rect x="120" y="642" width="420" height="74" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="330.0" y="686.0" font-size="20">执行画像</text>
+</g>
+<g class="node"><rect x="120" y="754" width="420" height="74" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="330.0" y="798.0" font-size="20">JIT 编译后的机器码</text>
+</g>
+<g class="node"><rect x="120" y="866" width="420" height="74" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="330.0" y="910.0" font-size="20">处理器执行</text>
+</g>
+<g class="node"><rect x="620" y="754" width="230" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="735.0" y="790.0" font-size="20">假设失效时</text>
+<text x="735.0" y="818.0" font-size="20">去优化</text>
+</g>
+<g class="edge-label"><rect x="650.0" y="627.5" width="170" height="66" rx="5" fill="#fff"/>
+<text x="735" y="653.5" font-size="20">恢复</text>
+<text x="735" y="681.5" font-size="20">解释执行</text>
+</g>
+</svg>

@@ -6,15 +6,9 @@
 
 ## 1. 生命周期图怎样读
 
-```mermaid
-flowchart LR
-    A[加载类型] --> B[验证与准备]
-    B --> C[初始化]
-    C --> D[使用]
-    D --> E[满足条件时允许卸载]
-    R[符号引用解析] -. 可按需进行 .-> B
-    R -. 可延后到使用时 .-> D
-```
+[![类的生命周期与按需解析](../assets/diagrams/class-lifecycle.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/class-lifecycle.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/class-lifecycle.svg)
 
 链接包含验证、准备、解析。但图中的顺序不能被读成“所有常量池条目必须全部解析完毕才能开始初始化”。实现可以采用不同解析策略，同时必须满足规范的时序与错误行为要求。[JVMS 25 §5.4](https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-5.html#jvms-5.4)
 

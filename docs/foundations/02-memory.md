@@ -41,13 +41,9 @@ class Account {
 
 从语言可观察行为看，work 创建 Account，history 指向另一个数组，cached 与 local 在赋值后引用同一 Account。给 local 重新赋值只改变局部引用；修改 local.balance 则修改对象字段，因此通过 cached 也能看到同一对象的字段变化。它没有创建第二个 Account。[JLS 25 §4.3.1](https://docs.oracle.com/javase/specs/jls/se25/html/jls-4.html#jls-4.3.1)
 
-```mermaid
-flowchart LR
-    L[work 中的局部引用 local] --> A[堆中的 Account]
-    C[可达类的静态字段 cached] --> A
-    A --> B[堆中的 byte 数组]
-    M[Account 类型元数据] -. 描述类型和字段 .-> A
-```
+[![引用、对象与类型元数据](../assets/diagrams/memory-reference-lifetimes.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/memory-reference-lifetimes.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/memory-reference-lifetimes.svg)
 
 这里没有把“类元数据”“Class 对象”“静态字段值”和“字段引用的实例”画成同一个实体。对 HotSpot 而言，类元数据主要由 Metaspace 管理，Class 镜像是堆中的对象；静态字段的实际存储也不应从规范方法区定义直接推成全部位于 Metaspace。
 

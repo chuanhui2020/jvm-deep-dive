@@ -4,14 +4,14 @@
 <style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b} .edge{fill:none;stroke:#475569;stroke-width:2;marker-end:url(#arrow)}</style>
 <rect width="800" height="172" rx="10" fill="#fff"/>
 <text x="400" y="29" text-anchor="middle" font-size="21" font-weight="bold">标记整理：集中存活对象</text>
-<text x="22" y="99" text-anchor="start" font-size="17" font-weight="normal">整理后</text>
+<text x="22" y="99" text-anchor="start" font-size="18" font-weight="normal">整理后</text>
 <rect x="120" y="62" width="128" height="62" rx="0" fill="#dbeafe" stroke="#64748b" stroke-width="1.5"/>
-<text x="184.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">A · 2</text>
+<text x="184.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">A · 2</text>
 <rect x="248" y="62" width="64" height="62" rx="0" fill="#dcfce7" stroke="#64748b" stroke-width="1.5"/>
-<text x="280.0" y="99" text-anchor="middle" font-size="15" font-weight="normal">B · 1</text>
+<text x="280.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">B · 1</text>
 <rect x="312" y="62" width="128" height="62" rx="0" fill="#ede9fe" stroke="#64748b" stroke-width="1.5"/>
-<text x="376.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">C · 2</text>
+<text x="376.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">C · 2</text>
 <rect x="440" y="62" width="320" height="62" rx="0" fill="#f8fafc" stroke="#64748b" stroke-width="1.5"/>
-<text x="600.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">空 · 5</text>
-<text x="400" y="154" text-anchor="middle" font-size="16" font-weight="normal">连续空闲 5 单位；需要搬迁对象并修正引用</text>
+<text x="600.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">空 · 5</text>
+<text x="400" y="154" text-anchor="middle" font-size="18" font-weight="normal">连续空闲 5 单位；需要搬迁对象并修正引用</text>
 </svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="766" viewBox="0 0 900 766" role="img" aria-labelledby="title desc">
+<title id="title">类的生命周期与按需解析</title><desc id="desc">加载类型后验证与准备，再初始化、使用；满足条件时允许卸载。符号引用解析可以按需进行，也可以延后到使用时。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b;text-anchor:middle}.edge{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.life{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:7 6}</style>
+<rect width="900" height="766" rx="12" fill="#fff"/>
+<text x="450.0" y="38" font-size="24" font-weight="bold">类的生命周期与按需解析</text>
+<path class="edge" d="M230 166 V208"/>
+<path class="edge" d="M230 294 V336"/>
+<path class="edge" d="M230 422 V464"/>
+<path class="edge" d="M230 550 V592"/>
+<path class="edge" d="M638 262 H402" stroke-dasharray="8 6"/>
+<path class="edge" d="M750 306 V508 H402" stroke-dasharray="8 6"/>
+<g class="node"><rect x="60" y="82" width="340" height="84" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="230.0" y="131.0" font-size="20">加载类型</text>
+</g>
+<g class="node"><rect x="60" y="210" width="340" height="84" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="230.0" y="259.0" font-size="20">验证与准备</text>
+</g>
+<g class="node"><rect x="60" y="338" width="340" height="84" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="230.0" y="387.0" font-size="20">初始化</text>
+</g>
+<g class="node"><rect x="60" y="466" width="340" height="84" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="230.0" y="515.0" font-size="20">使用</text>
+</g>
+<g class="node"><rect x="60" y="594" width="340" height="84" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="230.0" y="629.0" font-size="20">满足条件时</text>
+<text x="230.0" y="657.0" font-size="20">允许卸载</text>
+</g>
+<g class="node"><rect x="640" y="220" width="220" height="84" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.6"/>
+<text x="750.0" y="269.0" font-size="20">符号引用解析</text>
+</g>
+<g class="edge-label"><rect x="430.0" y="219.0" width="180" height="38" rx="5" fill="#fff"/>
+<text x="520" y="245" font-size="20">可按需进行</text>
+</g>
+<g class="edge-label"><rect x="654.0" y="375.0" width="180" height="66" rx="5" fill="#fff"/>
+<text x="744" y="401" font-size="20">可延后到</text>
+<text x="744" y="429" font-size="20">使用时</text>
+</g>
+</svg>

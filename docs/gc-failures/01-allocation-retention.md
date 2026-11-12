@@ -67,12 +67,9 @@ fixed 通过复用消除每轮分配。生产中的对策还可以是减少中�
 
 gc-retention 的 fault 把数组持续加入静态 CACHE。即使创建它们的循环进入下一轮，旧数组仍由缓存可达：
 
-```mermaid
-flowchart LR
-    C[仍可达的应用类] --> S[静态 CACHE]
-    S --> E[集合中的引用]
-    E --> A[已经不需要但仍保留的 byte 数组]
-```
+[![静态缓存导致的保留链](../assets/diagrams/static-cache-retention.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/static-cache-retention.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/static-cache-retention.svg)
 
 默认参数为 `fault 2048 64 1`：最多尝试 2048 块、每块 64 KiB、每步暂停 1 ms。在 32 MiB 堆中通常先于步数上限触发 OOM；具体块数依诊断预留、VM 和布局变化。
 

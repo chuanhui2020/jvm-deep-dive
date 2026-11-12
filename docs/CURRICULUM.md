@@ -31,17 +31,9 @@
 
 class 文件是虚拟机指令与元数据的载体，CPU 并不直接执行它。HotSpot 可先解释执行，再将热点方法或循环编译为机器码。Java SE 规定可观察语义，实现可以优化内部表示，只要不破坏语义。因此“规范有操作数栈”与“优化后用寄存器计算”并不冲突。
 
-~~~mermaid
-flowchart LR
-    Source[Java 源码] --> Class[class 字节码与元数据]
-    Class --> Loading[按需加载、链接与初始化]
-    Loading --> Interpreter[解释执行]
-    Interpreter --> Profile[热点与类型画像]
-    Profile --> JIT[JIT 机器码]
-    JIT --> CPU[CPU 执行]
-    JIT --> Deopt[假设失效时去优化]
-    Deopt --> Interpreter
-~~~
+[![Java 执行路径与去优化](assets/diagrams/jvm-execution-overview.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/jvm-execution-overview.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/jvm-execution-overview.svg)
 
 JVM 是进程的一部分，不是操作系统之外的盒子。堆上限约束不了该进程全部内存；线程、编译器、GC 和 I/O 也竞争 CPU。availableProcessors、最大堆与默认 GC 是环境与 ergonomics 的结果，不是跨平台常数。
 
@@ -123,7 +115,9 @@ JVM 是进程的一部分，不是操作系统之外的盒子。堆上限约束�
 
 追踪式 GC 从根沿引用图寻找存活对象，不依靠每个对象的引用计数。两个互相引用但无法从根到达的对象，仍可回收。相反，被静态集合、存活线程或 JNI 根间接持有的无用对象，GC 无法替业务判断“已经没价值”。
 
-![根可达的保留链与不可达的孤立环](assets/diagrams/root-reachability.svg)
+[![根可达的保留链与不可达的孤立环](assets/diagrams/root-reachability.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/root-reachability.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/root-reachability.svg)
 
 上图右侧孤立环没有来自 root 的强路径，可以回收；左侧对象即使业务不用，仍然可达。这才是循环引用与保留泄漏的关键区别。
 

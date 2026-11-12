@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600" role="img" aria-labelledby="title desc">
+<title id="title">静态缓存导致的保留链</title><desc id="desc">仍可达的应用类通过静态 CACHE 和集合中的引用，保留已经不需要的 byte 数组。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b;text-anchor:middle}.edge{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.life{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:7 6}</style>
+<rect width="900" height="600" rx="12" fill="#fff"/>
+<text x="450.0" y="38" font-size="24" font-weight="bold">静态缓存导致的保留链</text>
+<path class="edge" d="M450 170 V216"/>
+<path class="edge" d="M450 298 V344"/>
+<path class="edge" d="M450 426 V472"/>
+<g class="node"><rect x="220" y="90" width="460" height="80" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="137.0" font-size="20">仍可达的应用类</text>
+</g>
+<g class="node"><rect x="220" y="218" width="460" height="80" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="265.0" font-size="20">静态 CACHE</text>
+</g>
+<g class="node"><rect x="220" y="346" width="460" height="80" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="393.0" font-size="20">集合中的引用</text>
+</g>
+<g class="node"><rect x="220" y="474" width="460" height="80" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="507.0" font-size="20">已经不需要</text>
+<text x="450.0" y="535.0" font-size="20">但仍保留的 byte 数组</text>
+</g>
+</svg>

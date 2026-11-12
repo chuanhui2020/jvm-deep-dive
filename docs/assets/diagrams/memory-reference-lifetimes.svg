@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560" role="img" aria-labelledby="title desc">
+<title id="title">引用、对象与类型元数据</title><desc id="desc">work 中的局部引用 local 与可达类的静态字段 cached 都可以指向堆中的 Account；Account 引用 byte 数组。类型元数据描述类型和字段，不是同一种持有关系。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b;text-anchor:middle}.edge{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.life{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:7 6}</style>
+<rect width="900" height="560" rx="12" fill="#fff"/>
+<text x="450.0" y="38" font-size="24" font-weight="bold">引用、对象与类型元数据</text>
+<path class="edge" d="M205 172 V220 H370 V270"/>
+<path class="edge" d="M695 172 V220 H530 V270"/>
+<path class="edge" d="M530 354 V382 H695 V418"/>
+<path class="edge" d="M205 418 V312 H273" stroke-dasharray="8 6"/>
+<g class="node"><rect x="40" y="90" width="330" height="80" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="205.0" y="123.0" font-size="20">work 中的</text>
+<text x="205.0" y="151.0" font-size="20">局部引用 local</text>
+</g>
+<g class="node"><rect x="530" y="90" width="330" height="80" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="695.0" y="123.0" font-size="20">可达类的静态字段</text>
+<text x="695.0" y="151.0" font-size="20">cached</text>
+</g>
+<g class="node"><rect x="275" y="272" width="350" height="80" rx="8" fill="#dcfce7" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="319.0" font-size="20">堆中的 Account</text>
+</g>
+<g class="node"><rect x="40" y="420" width="330" height="86" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.6"/>
+<text x="205.0" y="456.0" font-size="20">Account</text>
+<text x="205.0" y="484.0" font-size="20">类型元数据</text>
+</g>
+<g class="node"><rect x="530" y="420" width="330" height="86" rx="8" fill="#dcfce7" stroke="#64748b" stroke-width="1.6"/>
+<text x="695.0" y="470.0" font-size="20">堆中的 byte 数组</text>
+</g>
+<g class="edge-label"><rect x="85.0" y="357.0" width="220" height="38" rx="5" fill="#fff"/>
+<text x="195" y="383" font-size="20">描述类型和字段</text>
+</g>
+</svg>

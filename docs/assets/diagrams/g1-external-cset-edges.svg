@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="550" viewBox="0 0 900 550" role="img" aria-labelledby="title desc">
+<title id="title">G1：从 CSet 外找到入边</title><desc id="desc">线程或其他根指向 O 区域的 cache；cache 和其他非 CSet 区域都可能指向本次 CSet 中的 X。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b;text-anchor:middle}.edge{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.life{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:7 6}</style>
+<rect width="900" height="550" rx="12" fill="#fff"/>
+<text x="450.0" y="38" font-size="24" font-weight="bold">G1：从 CSet 外找到入边</text>
+<path class="edge" d="M235 170 V234"/>
+<path class="edge" d="M235 320 V365 H390 V404"/>
+<path class="edge" d="M665 320 V365 H510 V404"/>
+<g class="node"><rect x="70" y="86" width="330" height="82" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="235.0" y="134.0" font-size="20">线程或其他根</text>
+</g>
+<g class="node"><rect x="70" y="236" width="330" height="82" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="235.0" y="284.0" font-size="20">O 中 cache</text>
+</g>
+<g class="node"><rect x="500" y="236" width="330" height="82" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="665.0" y="270.0" font-size="20">其他非 CSet</text>
+<text x="665.0" y="298.0" font-size="20">区域</text>
+</g>
+<g class="node"><rect x="285" y="406" width="330" height="82" rx="8" fill="#fff7ed" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="440.0" font-size="20">E 中 X</text>
+<text x="450.0" y="468.0" font-size="20">属于本次 CSet</text>
+</g>
+<text x="450.0" y="526" font-size="20">CSet 外的入边也需要被发现</text>
+</svg>

@@ -27,7 +27,9 @@ ZGC 有不同页类型和不同对象大小的处理路径。页年龄、晋升�
 
 堆中对象引用字段用带元数据的表示编码，供应用正常解引用的值需要由屏障转换为合适的地址表示。学习时区分：字段的位置 p、字段保存的编码引用、去色后的目标地址、目标对象本身。
 
-![ZGC 编码引用到可用地址](../assets/diagrams/zgc-reference-decoding.svg)
+[![ZGC 编码引用到可用地址](../assets/diagrams/zgc-reference-decoding.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/zgc-reference-decoding.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/zgc-reference-decoding.svg)
 
 `jdk-25-ga` 的 zAddress 定义涉及年轻标记、老标记、finalizable、remembered、remapped 等元数据。不同架构的编码和指令优化可能不同；不要背早期 ZGC 的“固定地址位数 + 固定几个高位颜色”的图来回答 25。[zAddress.hpp](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/z/zAddress.hpp)
 
@@ -60,17 +62,9 @@ good/bad 相对于当前代的阶段掩码解释。阶段转换可以改变“�
 
 源码的 `ZBarrier::self_heal` 使用原子比较交换等约束：仅在字段仍是预期旧值时修正，失败后重新检查是否已经满足条件；还需要保持元数据转换的单调性和特殊引用约束。[自修复实现](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/z/zBarrier.inline.hpp)
 
-```mermaid
-sequenceDiagram
-    participant A as 应用线程
-    participant B as 屏障处理
-    participant F as 字段槽 p
-    B->>F: 读取旧编码 r
-    B->>B: 找到有效表示 r'
-    A->>F: 更新为业务新引用 Q
-    B->>F: CAS 仅在仍等于 r 时写 r'
-    F-->>B: 比较失败，保留 Q
-```
+[![ZGC：用 CAS 避免覆盖并发更新](../assets/diagrams/zgc-cas-self-healing.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/zgc-cas-self-healing.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/zgc-cas-self-healing.svg)
 
 这是解释为什么需要 CAS 的并发情形；真实屏障代码还要处理颜色升级、空引用和阶段关系，不是只实现这张图就完成 ZGC。
 
@@ -148,16 +142,9 @@ JDK 25 的 `ZDriverMajor::gc` 主线先 `collect_young` 再 `collect_old`。但�
 
 对于不同 cause，年轻前置处理可能采用 full-preclean、full-roots 或 partial-roots 等类型。这里的 “full” 是内部策略语境，不能直接翻译成 G1 的 STW Full GC。
 
-```mermaid
-flowchart TD
-    Q[Major 请求] --> S[相关 Young 启动：建立 Young/Old 标记状态]
-    S --> Y[年轻遍历与收集到 Old 的入口]
-    Y --> O[Old 并发标记]
-    O --> E[Old Mark End 协调]
-    E --> N[非强引用处理与重定位集准备]
-    N --> R[协调 Young 根修正与 Old Relocate Start]
-    R --> C[Old 并发重定位]
-```
+[![分代 ZGC：Major 的代际协调](../assets/diagrams/zgc-major-cycle.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/zgc-major-cycle.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/zgc-major-cycle.svg)
 
 老代主线中可以穿插后续年轻收集，但不是两个收集器任意重叠所有阶段。比如老代重定位开始前，对 young roots 的修正与相应锁定要避免旧引用跨越不允许的阶段组合；重映射代码也解释了怎样区分旧 young/old 地址。[Driver 调度](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/z/zDriver.cpp)、[代际协调与阶段](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/z/zGeneration.cpp)
 

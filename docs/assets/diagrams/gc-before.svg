@@ -4,16 +4,16 @@
 <style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b} .edge{fill:none;stroke:#475569;stroke-width:2;marker-end:url(#arrow)}</style>
 <rect width="800" height="172" rx="10" fill="#fff"/>
 <text x="400" y="29" text-anchor="middle" font-size="21" font-weight="bold">抽象堆：回收前</text>
-<text x="22" y="99" text-anchor="start" font-size="17" font-weight="normal">回收前</text>
+<text x="22" y="99" text-anchor="start" font-size="18" font-weight="normal">回收前</text>
 <rect x="120" y="62" width="128" height="62" rx="0" fill="#dbeafe" stroke="#64748b" stroke-width="1.5"/>
-<text x="184.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">A · 2</text>
+<text x="184.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">A · 2</text>
 <rect x="248" y="62" width="128" height="62" rx="0" fill="#fee2e2" stroke="#64748b" stroke-width="1.5"/>
-<text x="312.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">x · 2</text>
+<text x="312.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">x · 2</text>
 <rect x="376" y="62" width="64" height="62" rx="0" fill="#dcfce7" stroke="#64748b" stroke-width="1.5"/>
-<text x="408.0" y="99" text-anchor="middle" font-size="15" font-weight="normal">B · 1</text>
+<text x="408.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">B · 1</text>
 <rect x="440" y="62" width="192" height="62" rx="0" fill="#fee2e2" stroke="#64748b" stroke-width="1.5"/>
-<text x="536.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">y · 3</text>
+<text x="536.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">y · 3</text>
 <rect x="632" y="62" width="128" height="62" rx="0" fill="#ede9fe" stroke="#64748b" stroke-width="1.5"/>
-<text x="696.0" y="99" text-anchor="middle" font-size="17" font-weight="normal">C · 2</text>
-<text x="400" y="154" text-anchor="middle" font-size="16" font-weight="normal">A、B、C 存活，共 5 单位；x、y 为死对象</text>
+<text x="696.0" y="99" text-anchor="middle" font-size="18" font-weight="normal">C · 2</text>
+<text x="400" y="154" text-anchor="middle" font-size="18" font-weight="normal">A、B、C 存活，共 5 单位；x、y 为死对象</text>
 </svg>

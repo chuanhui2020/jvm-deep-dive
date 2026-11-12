@@ -10,14 +10,9 @@
 
 程序从本项目 JAR 读取 Payload 的 class 字节。每轮创建新的 IsolatedLoader，用它定义同名 Payload，再把加载器加入静态 CACHE。
 
-```mermaid
-flowchart LR
-    R[可达的应用状态] --> C[静态 CACHE]
-    C --> L1[Loader 1]
-    C --> L2[Loader 2]
-    L1 --> T1[同名 Payload 类型 1]
-    L2 --> T2[同名 Payload 类型 2]
-```
+[![缓存加载器阻止类卸载](../assets/diagrams/class-loader-retention.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/class-loader-retention.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/class-loader-retention.svg)
 
 只比二进制名称或 class 文件哈希，不能判断类型相同。定义加载器不同，类型身份也不同。由于 CACHE 保留这些加载器，相关类型资源不能按“业务早就不用了”自行消失。
 

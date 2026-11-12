@@ -43,7 +43,7 @@
 </g>
 <path class="edge" d="M582 180 V256"/>
 <path class="edge" d="M450 286 H426 V150 H450"/>
-<text x="644" y="223" font-size="16">相互引用</text>
-<text x="199" y="365" font-size="17">仍可达，GC 会保留</text>
-<text x="582" y="365" font-size="17">没有根路径，可回收</text>
+<text x="644" y="223" font-size="18">相互引用</text>
+<text x="199" y="365" font-size="18">仍可达，GC 会保留</text>
+<text x="582" y="365" font-size="18">没有根路径，可回收</text>
 </svg>

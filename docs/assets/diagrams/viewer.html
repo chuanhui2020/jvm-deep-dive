@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JVM 图解查看器</title>
+<style>
+*{box-sizing:border-box}body{margin:0;height:100dvh;display:flex;flex-direction:column;color:#172033;background:#eef2f7;font:16px/1.5 system-ui,"Microsoft YaHei",sans-serif}
+header{padding:16px 20px;background:white;border-bottom:1px solid #cbd5e1}h1{font-size:20px;margin:0 0 12px}
+.toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:8px}button,select,a{font:inherit}button,select,.original{border:1px solid #94a3b8;background:#fff;border-radius:6px;padding:7px 11px;color:#172033}
+button{cursor:pointer}button:hover,.original:hover{background:#eff6ff}select{max-width:min(100%,500px);flex:1;min-width:180px}
+button:focus-visible,select:focus-visible,a:focus-visible,#viewport:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+.original{display:inline-block;text-decoration:none}#zoom{min-width:56px;text-align:center;font-variant-numeric:tabular-nums}
+.hint{margin:10px 0 0;color:#475569;font-size:14px}#viewport{flex:1;min-height:180px;overflow:hidden;position:relative;touch-action:none;cursor:grab;background:radial-gradient(#cbd5e1 1px,transparent 1px) 0 0/18px 18px}
+#viewport.dragging{cursor:grabbing}#drawing{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;user-select:none;background:white;border-radius:8px;box-shadow:0 6px 22px #33415526}
+footer{padding:8px 20px;font-size:13px;color:#475569}footer a{color:#1d4ed8}@media(max-width:600px){header{padding:12px}.hint{font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+<h1>JVM 图解查看器 <small id="position"></small></h1>
+<div class="toolbar" aria-label="图片查看工具">
+<button id="previous" type="button" aria-label="上一张">上一张</button>
+<select id="select" aria-label="选择图解"></select>
+<button id="next" type="button" aria-label="下一张">下一张</button>
+<button id="out" type="button" aria-label="缩小">−</button><output id="zoom" aria-live="polite">100%</output><button id="in" type="button" aria-label="放大">＋</button>
+<button id="width" type="button">适应宽度</button><button id="fit" type="button">适应整图</button><button id="actual" type="button">原尺寸</button>
+<a id="original" class="original" target="_blank" rel="noopener">打开 SVG</a>
+</div>
+<p class="hint">按住图片拖动；滚轮上下移动，Ctrl + 滚轮缩放。键盘 + / − 缩放，方向键移动，0 恢复宽度适配。SVG 放大后文字仍然清晰。</p>
+</header>
+<main id="viewport" tabindex="0" aria-label="可拖动和缩放的图解区域"><img id="drawing" draggable="false" alt=""></main>
+<footer>无需服务器或联网：下载仓库后，直接在浏览器打开本文件。<a href="README.md">返回图册说明</a></footer>
+<script>
+const figures=[{"file": "class-lifecycle.svg", "title": "类的生命周期与按需解析", "width": 900, "height": 766}, {"file": "class-loader-retention.svg", "title": "缓存加载器阻止类卸载", "width": 900, "height": 630}, {"file": "g1-collection-cycle.svg", "title": "G1：年轻收集、并发标记与 Mixed", "width": 900, "height": 1076}, {"file": "g1-contiguous-regions.svg", "title": "G1 连续区域压力的教学布局", "width": 800, "height": 194}, {"file": "g1-external-cset-edges.svg", "title": "G1：从 CSet 外找到入边", "width": 900, "height": 550}, {"file": "gc-before.svg", "title": "抽象堆：回收前", "width": 800, "height": 172}, {"file": "gc-compaction.svg", "title": "标记整理：集中存活对象", "width": 800, "height": 172}, {"file": "gc-copying.svg", "title": "复制：搬迁存活对象并修正引用", "width": 800, "height": 266}, {"file": "gc-mark-sweep.svg", "title": "标记清除：保留原位置", "width": 800, "height": 172}, {"file": "jvm-execution-overview.svg", "title": "Java 执行路径与去优化", "width": 900, "height": 872}, {"file": "logical-call-stack.svg", "title": "当前线程的逻辑调用栈", "width": 680, "height": 286}, {"file": "memory-reference-lifetimes.svg", "title": "引用、对象与类型元数据", "width": 900, "height": 560}, {"file": "old-to-young-reference.svg", "title": "老年代到年轻代的引用", "width": 900, "height": 460}, {"file": "reachable-retention-and-cycle.svg", "title": "保留泄漏与孤立环", "width": 900, "height": 620}, {"file": "root-reachability.svg", "title": "根可达的保留链与不可达的孤立环", "width": 780, "height": 398}, {"file": "source-to-execution.svg", "title": "从源码到解释执行与 JIT", "width": 900, "height": 984}, {"file": "static-cache-retention.svg", "title": "静态缓存导致的保留链", "width": 900, "height": 600}, {"file": "thread-local-references.svg", "title": "ThreadLocal 的强弱引用关系", "width": 720, "height": 440}, {"file": "volatile-happens-before.svg", "title": "volatile 发布的 happens-before 链", "width": 780, "height": 320}, {"file": "zgc-cas-self-healing.svg", "title": "ZGC：用 CAS 避免覆盖并发更新", "width": 900, "height": 700}, {"file": "zgc-major-cycle.svg", "title": "分代 ZGC：Major 的代际协调", "width": 900, "height": 1054}, {"file": "zgc-reference-decoding.svg", "title": "ZGC 编码引用到可用地址", "width": 640, "height": 366}];
+const select=document.querySelector('#select'),drawing=document.querySelector('#drawing'),viewport=document.querySelector('#viewport');
+const zoom=document.querySelector('#zoom');let index=0,scale=1,x=0,y=0,drag=null,mode='width';
+figures.forEach((f,i)=>{const o=document.createElement('option');o.value=String(i);o.textContent=`${i+1}. ${f.title}`;select.append(o);});
+function paint(){drawing.style.transform=`translate(${x}px, ${y}px) scale(${scale})`;zoom.textContent=`${Math.round(scale*100)}%`;}
+function size(){return{w:viewport.clientWidth,h:viewport.clientHeight,iw:drawing.naturalWidth,ih:drawing.naturalHeight};}
+function fit(kind){const s=size();if(!s.iw||!s.ih)return;mode=kind;scale=kind==='actual'?1:Math.min(4,(s.w-48)/s.iw,kind==='fit'?(s.h-48)/s.ih:4);scale=Math.max(.2,scale);x=(s.w-s.iw*scale)/2;y=Math.max(24,(s.h-s.ih*scale)/2);paint();}
+function changeZoom(factor,cx=viewport.clientWidth/2,cy=viewport.clientHeight/2){if(!drawing.naturalWidth)return;mode='manual';const next=Math.max(.2,Math.min(5,scale*factor));x=cx-(cx-x)*next/scale;y=cy-(cy-y)*next/scale;scale=next;paint();}
+function show(i){index=(i+figures.length)%figures.length;select.value=String(index);const f=figures[index];drawing.alt=f.title;drawing.src=f.file;document.querySelector('#original').href=f.file;document.querySelector('#position').textContent=`${index+1} / ${figures.length}`;document.title=f.title+' · JVM 图解';mode='width';}
+drawing.addEventListener('load',()=>fit('width'));
+select.addEventListener('change',()=>show(Number(select.value)));
+document.querySelector('#previous').onclick=()=>show(index-1);document.querySelector('#next').onclick=()=>show(index+1);
+document.querySelector('#in').onclick=()=>changeZoom(1.25);document.querySelector('#out').onclick=()=>changeZoom(.8);
+document.querySelector('#width').onclick=()=>fit('width');document.querySelector('#fit').onclick=()=>fit('fit');document.querySelector('#actual').onclick=()=>fit('actual');
+viewport.addEventListener('wheel',e=>{e.preventDefault();if(e.ctrlKey){const b=viewport.getBoundingClientRect();changeZoom(Math.exp(-e.deltaY*.002),e.clientX-b.left,e.clientY-b.top);}else{mode='manual';x-=e.deltaX;y-=e.deltaY;paint();}},{passive:false});
+viewport.addEventListener('pointerdown',e=>{if(e.button!==0)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY,tx:x,ty:y};mode='manual';viewport.classList.add('dragging');try{viewport.setPointerCapture(e.pointerId);}catch{}viewport.focus();});
+viewport.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;x=drag.tx+e.clientX-drag.x;y=drag.ty+e.clientY-drag.y;paint();});
+function endDrag(){drag=null;viewport.classList.remove('dragging');}
+viewport.addEventListener('pointerup',endDrag);viewport.addEventListener('pointercancel',endDrag);viewport.addEventListener('lostpointercapture',endDrag);
+viewport.addEventListener('keydown',e=>{if(e.key==='+'||e.key==='=')changeZoom(1.25);else if(e.key==='-')changeZoom(.8);else if(e.key==='0')fit('width');else if(e.key==='ArrowLeft')x+=80;else if(e.key==='ArrowRight')x-=80;else if(e.key==='ArrowUp')y+=80;else if(e.key==='ArrowDown')y-=80;else return;e.preventDefault();paint();});
+window.addEventListener('resize',()=>{if(mode!=='manual')fit(mode);});
+const requested=new URLSearchParams(location.search).get('diagram');const initial=figures.findIndex(f=>f.file===requested);show(initial<0?0:initial);
+</script>
+</body>
+</html>

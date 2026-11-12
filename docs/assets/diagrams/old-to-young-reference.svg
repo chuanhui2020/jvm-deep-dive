@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="460" viewBox="0 0 900 460" role="img" aria-labelledby="title desc">
+<title id="title">老年代到年轻代的引用</title><desc id="desc">根引用老年代中的 oldCache，oldCache 再引用年轻代 requestData。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b;text-anchor:middle}.edge{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.life{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:7 6}</style>
+<rect width="900" height="460" rx="12" fill="#fff"/>
+<text x="450.0" y="38" font-size="24" font-weight="bold">老年代到年轻代的引用</text>
+<path class="edge" d="M450 160 V208"/>
+<path class="edge" d="M450 288 V336"/>
+<g class="node"><rect x="220" y="82" width="460" height="78" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="128.0" font-size="20">根</text>
+</g>
+<g class="node"><rect x="220" y="210" width="460" height="78" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="256.0" font-size="20">老年代 oldCache</text>
+</g>
+<g class="node"><rect x="220" y="338" width="460" height="78" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="384.0" font-size="20">年轻代 requestData</text>
+</g>
+</svg>

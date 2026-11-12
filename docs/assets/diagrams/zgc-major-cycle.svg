@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1054" viewBox="0 0 900 1054" role="img" aria-labelledby="title desc">
+<title id="title">分代 ZGC：Major 的代际协调</title><desc id="desc">Major 请求带动相关 Young 启动和年轻遍历，衔接 Old 标记、Mark End、非强引用处理、重定位集准备、根修正与 Old 重定位。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b;text-anchor:middle}.edge{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.life{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:7 6}</style>
+<rect width="900" height="1054" rx="12" fill="#fff"/>
+<text x="450.0" y="38" font-size="24" font-weight="bold">分代 ZGC：Major 的代际协调</text>
+<path class="edge" d="M450 168 V200"/>
+<path class="edge" d="M450 288 V320"/>
+<path class="edge" d="M450 408 V440"/>
+<path class="edge" d="M450 528 V560"/>
+<path class="edge" d="M450 648 V680"/>
+<path class="edge" d="M450 768 V800"/>
+<path class="edge" d="M450 888 V920"/>
+<g class="node"><rect x="210" y="82" width="480" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="132.0" font-size="20">Major 请求</text>
+</g>
+<g class="node"><rect x="210" y="202" width="480" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="238.0" font-size="20">相关 Young 启动</text>
+<text x="450.0" y="266.0" font-size="20">建立 Young / Old 标记状态</text>
+</g>
+<g class="node"><rect x="210" y="322" width="480" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="358.0" font-size="20">年轻遍历</text>
+<text x="450.0" y="386.0" font-size="20">收集到 Old 的入口</text>
+</g>
+<g class="node"><rect x="210" y="442" width="480" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="492.0" font-size="20">Old 并发标记</text>
+</g>
+<g class="node"><rect x="210" y="562" width="480" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="612.0" font-size="20">Old Mark End 协调</text>
+</g>
+<g class="node"><rect x="210" y="682" width="480" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="718.0" font-size="20">非强引用处理</text>
+<text x="450.0" y="746.0" font-size="20">与重定位集准备</text>
+</g>
+<g class="node"><rect x="210" y="802" width="480" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="838.0" font-size="20">协调 Young 根修正</text>
+<text x="450.0" y="866.0" font-size="20">与 Old Relocate Start</text>
+</g>
+<g class="node"><rect x="210" y="922" width="480" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="972.0" font-size="20">Old 并发重定位</text>
+</g>
+</svg>

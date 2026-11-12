@@ -10,18 +10,9 @@ JVM 规范描述一台抽象机器，包括指令、类型、运行时结构与�
 
 源码中的 `a + b` 经 javac 转换为 class 文件中的指令。运行时还要查找类型、完成必要的链接与初始化、执行方法。HotSpot 可以解释字节码，也可以将热点代码编译成机器码。JIT 优化不需要维持字节码里每一次变量存取的物理形态，但要维持规定的可观察行为。
 
-```mermaid
-flowchart LR
-    A[Java 源码] --> B[javac]
-    B --> C[class 文件]
-    C --> D[加载与必要的链接、初始化]
-    D --> E[解释执行与运行时服务]
-    E --> F[执行画像]
-    F --> G[JIT 编译后的机器码]
-    G --> H[处理器执行]
-    G --> I[假设失效时去优化]
-    I --> E
-```
+[![从源码到解释执行与 JIT](../assets/diagrams/source-to-execution.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/source-to-execution.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/source-to-execution.svg)
 
 这是学习用的执行路径图，不是“所有方法必须先解释固定次数”的状态机。启动参数、编译策略、AOT 缓存等都可能改变实际路径。规范并未要求实现使用解释器或 JIT。[JVMS 25 §2 的实现边界](https://docs.oracle.com/javase/specs/jvms/se25/html/jvms-2.html)
 
@@ -47,7 +38,9 @@ flowchart LR
 
 假设 `main → order → price`，运行 price 时可以画成：
 
-![当前线程的逻辑调用栈](../assets/diagrams/logical-call-stack.svg)
+[![当前线程的逻辑调用栈](../assets/diagrams/logical-call-stack.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/logical-call-stack.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/logical-call-stack.svg)
 
 price 正常返回后，它的结果交给调用方，order 恢复为当前调用。若 price 抛异常，则先在适用的处理器中寻找匹配项；当前方法没有匹配处理器时，退出当前调用并继续向调用方传播。正常返回与异常退出不能画成“都执行到方法最后一行”。
 

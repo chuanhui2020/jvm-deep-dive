@@ -8,14 +8,9 @@
 
 假设 A.next 指向 B，B.next 指向 A，创建它们的方法已经返回，外部没有任何强引用路径。它们互相引用，但业务已经无法到达它们。简单的引用计数会被这个环卡住；追踪式 GC 可以通过根可达性识别这个孤立子图。
 
-```mermaid
-flowchart LR
-    R[运行时根] --> S[仍存活的服务]
-    S --> C[缓存集合]
-    C --> V[业务已不用的值]
-    A[孤立 A] --> B[孤立 B]
-    B --> A
-```
+[![保留泄漏与孤立环](../assets/diagrams/reachable-retention-and-cycle.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/reachable-retention-and-cycle.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/reachable-retention-and-cycle.svg)
 
 左侧 V 可能造成保留泄漏：程序不需要它，但仍有根路径。右侧环可以回收。判断对象是否“有用”属于业务；GC 基于运行时可达性，不会自动理解订单已经过期。
 
@@ -95,7 +90,9 @@ if (value != null) {
 
 ### ThreadLocal
 
-![ThreadLocal 的强弱引用关系](../assets/diagrams/thread-local-references.svg)
+[![ThreadLocal 的强弱引用关系](../assets/diagrams/thread-local-references.svg)](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/thread-local-references.svg)
+
+[打开大图](https://raw.githubusercontent.com/chuanhui2020/jvm-deep-dive/main/docs/assets/diagrams/thread-local-references.svg)
 
 key 变成弱可达并被清空，并不自动切断 Entry 对 value 的强引用。线程池线程长时间存在时，value 可能超过一次请求的生命周期。因此要在合适的 finally 中 remove，并避免把线程本地上下文误当成请求结束后自然销毁的普通局部变量。
 

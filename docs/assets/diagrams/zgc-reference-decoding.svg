@@ -6,7 +6,7 @@
 <text x="320" y="30" text-anchor="middle" font-size="21" font-weight="bold">ZGC：编码引用到可用地址</text>
 <rect x="60" y="58" width="520" height="72" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
 <text x="320" y="87" text-anchor="middle" font-size="19" font-weight="bold">字段槽 p 中的编码引用</text>
-<text x="320" y="113" text-anchor="middle" font-size="17" font-weight="normal">地址相关信息 + 元数据</text>
+<text x="320" y="113" text-anchor="middle" font-size="18" font-weight="normal">地址相关信息 + 元数据</text>
 <rect x="60" y="174" width="520" height="58" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>
 <text x="320.0" y="209.0" text-anchor="middle" font-size="18" font-weight="normal">屏障检查 / 必要修正 / 去色</text>
 <rect x="60" y="276" width="520" height="58" rx="6" fill="#eff6ff" stroke="#64748b" stroke-width="1.5"/>

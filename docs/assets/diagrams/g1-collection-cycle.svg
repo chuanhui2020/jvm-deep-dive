@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1076" viewBox="0 0 900 1076" role="img" aria-labelledby="title desc">
+<title id="title">G1：年轻收集、并发标记与 Mixed</title><desc id="desc">Normal Young、Concurrent Start、root-region 扫描与标记、Remark、并发重建、Cleanup、Prepare Mixed、Mixed 的教学周期。并发标记期间可穿插普通年轻收集。橙色是暂停阶段，蓝色是并发阶段。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#475569"/></marker></defs>
+<style>text{font-family:"Microsoft YaHei","Noto Sans CJK SC",Arial,sans-serif;fill:#1e293b;text-anchor:middle}.edge{fill:none;stroke:#475569;stroke-width:2.2;marker-end:url(#arrow)}.life{stroke:#94a3b8;stroke-width:1.5;stroke-dasharray:7 6}</style>
+<rect width="900" height="1076" rx="12" fill="#fff"/>
+<text x="450.0" y="38" font-size="24" font-weight="bold">G1：年轻收集、并发标记与 Mixed</text>
+<path class="edge" d="M450 168 V200"/>
+<path class="edge" d="M450 288 V320"/>
+<path class="edge" d="M450 408 V440"/>
+<path class="edge" d="M450 528 V560"/>
+<path class="edge" d="M450 648 V680"/>
+<path class="edge" d="M450 768 V800"/>
+<path class="edge" d="M450 888 V920"/>
+<path class="edge" d="M652 965 H846 V125 H652"/>
+<path class="edge" d="M248 365 H54 V125 H248" stroke-dasharray="8 6"/>
+<g class="node"><rect x="250" y="82" width="400" height="86" rx="8" fill="#fff7ed" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="118.0" font-size="20">Normal Young</text>
+<text x="450.0" y="146.0" font-size="20">暂停</text>
+</g>
+<g class="node"><rect x="250" y="202" width="400" height="86" rx="8" fill="#fff7ed" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="238.0" font-size="20">Concurrent Start</text>
+<text x="450.0" y="266.0" font-size="20">年轻暂停</text>
+</g>
+<g class="node"><rect x="250" y="322" width="400" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="358.0" font-size="20">并发 root-region</text>
+<text x="450.0" y="386.0" font-size="20">扫描与标记</text>
+</g>
+<g class="node"><rect x="250" y="442" width="400" height="86" rx="8" fill="#fff7ed" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="478.0" font-size="20">Remark</text>
+<text x="450.0" y="506.0" font-size="20">暂停</text>
+</g>
+<g class="node"><rect x="250" y="562" width="400" height="86" rx="8" fill="#eff6ff" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="598.0" font-size="20">并发重建</text>
+<text x="450.0" y="626.0" font-size="20">记忆集等工作</text>
+</g>
+<g class="node"><rect x="250" y="682" width="400" height="86" rx="8" fill="#fff7ed" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="718.0" font-size="20">Cleanup</text>
+<text x="450.0" y="746.0" font-size="20">暂停</text>
+</g>
+<g class="node"><rect x="250" y="802" width="400" height="86" rx="8" fill="#fff7ed" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="838.0" font-size="20">Prepare Mixed</text>
+<text x="450.0" y="866.0" font-size="20">年轻暂停</text>
+</g>
+<g class="node"><rect x="250" y="922" width="400" height="86" rx="8" fill="#fff7ed" stroke="#64748b" stroke-width="1.6"/>
+<text x="450.0" y="958.0" font-size="20">一到多次</text>
+<text x="450.0" y="986.0" font-size="20">Mixed 暂停</text>
+</g>
+<g class="edge-label"><rect x="670.0" y="667.0" width="150" height="66" rx="5" fill="#fff"/>
+<text x="745" y="693" font-size="20">进入</text>
+<text x="745" y="721" font-size="20">下一轮</text>
+</g>
+<g class="edge-label"><rect x="42.0" y="211.0" width="180" height="66" rx="5" fill="#fff"/>
+<text x="132" y="237" font-size="20">可穿插普通</text>
+<text x="132" y="265" font-size="20">年轻收集</text>
+</g>
+<text x="450.0" y="1052" font-size="20">橙色：暂停阶段；蓝色：并发阶段</text>
+</svg>
