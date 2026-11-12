@@ -19,6 +19,18 @@
 
 真实结果见 [验证快照](RESULTS.md)。本机 JVM 结果与 Pod 结果分别记录：当前没有可连接的 Docker 引擎或 Kubernetes API，因此 **OOMKilled 和真实 cgroup CPU throttling 尚未实测**；相应完整负载、清单和取证步骤已提供。
 
+## Minikube 主流程
+
+先按 [Pod 主手册](../PODS.md)完成学习 namespace 和环境 smoke。然后在 Minikube 节点构建本实验镜像，选择 fault Job，在工作期观察 GC/JFR，导出后再运行 fixed。宿主机无需 PowerShell 启动器：
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-g1-evacuation:local labs/g1-evacuation
+kubectl --context jvm-lab -n jvm-labs apply -f labs/g1-evacuation/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/g1-evacuation-fault -c lab --pod-running-timeout=120s
+```
+
+各场景的本机脚本示例只用于开发验证；Pod 对照以各自 job-fault.yaml/job-fixed.yaml 的参数和实际 Pod 状态为准。
+
 ## 2. 一个场景应该交付什么
 
 1. 明确症状：哪个进程、哪种限制、哪个时间窗口。
@@ -30,7 +42,7 @@
 
 “GC 次数多”“Full GC”“内存泄漏”“Java OOM”“OOMKilled”不是同义词。一个 fault 可能没有 OOM，也可能被教学代码捕获后正常退出；一个 fixed 也可能有合理的 GC，不能用次数必须为零验收。
 
-## 3. 本机一键取证
+## 3. 本机辅助取证（可选）
 
 从仓库根目录执行：
 
@@ -98,10 +110,9 @@ CPU 限流对照故意保持两组 request 都为 100m，只把 limit 从 100m �
 以单个实验为例：
 
 ```powershell
-docker build -t jvm-lab-g1-evacuation:local labs/g1-evacuation
-minikube image load jvm-lab-g1-evacuation:local
-kubectl apply -f labs/g1-evacuation/k8s/job-fault.yaml
-kubectl logs -f job/g1-evacuation-fault -c lab
+minikube -p jvm-lab image build -t jvm-lab-g1-evacuation:local labs/g1-evacuation
+kubectl --context jvm-lab -n jvm-labs apply -f labs/g1-evacuation/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/g1-evacuation-fault -c lab
 ```
 
 远程集群先推送镜像，再修改清单 image。只应用本次要运行的具体清单，避免递归应用所有故障场景造成节点资源竞争。`job.yaml` 是 fault 的同名快捷副本；不是第三种实验。

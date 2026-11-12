@@ -24,15 +24,14 @@ request 用于调度和竞争权重等，limit 才是本组故意改变的配额
 ## 3. 重现和取证
 
 ```powershell
-docker build -t jvm-lab-cpu-throttle:local labs/cpu-throttle
-minikube image load jvm-lab-cpu-throttle:local
-kubectl apply -f labs/cpu-throttle/k8s/job-fault.yaml
-$labPod = kubectl get pod -l job-name=cpu-throttle-fault -o jsonpath='{.items[0].metadata.name}'
-kubectl logs -f $labPod -c lab
-kubectl exec $labPod -c lab -- cat /sys/fs/cgroup/cpu.max
-kubectl exec $labPod -c lab -- cat /sys/fs/cgroup/cpu.stat
-kubectl exec $labPod -c lab -- jcmd 1 VM.flags
-kubectl exec $labPod -c lab -- jcmd 1 JFR.start name=cpu settings=profile duration=20s filename=/data/cpu.jfr
+minikube -p jvm-lab image build -t jvm-lab-cpu-throttle:local labs/cpu-throttle
+kubectl --context jvm-lab -n jvm-labs apply -f labs/cpu-throttle/k8s/job-fault.yaml
+$labPod = kubectl --context jvm-lab -n jvm-labs get pod -l job-name=cpu-throttle-fault -o jsonpath='{.items[0].metadata.name}'
+kubectl --context jvm-lab -n jvm-labs logs -f $labPod -c lab
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- cat /sys/fs/cgroup/cpu.max
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- cat /sys/fs/cgroup/cpu.stat
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- jcmd 1 VM.flags
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- jcmd 1 JFR.start name=cpu settings=profile duration=20s filename=/data/cpu.jfr
 ```
 
 程序会尝试打印 cgroup v2 cpu.stat 的前后快照。路径未挂载或在 Windows 时会标记不可用；此时不应伪造 throttling 结论。对相同 cgroup、相同窗口计算：

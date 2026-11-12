@@ -1,6 +1,18 @@
 # G1 / 分代 ZGC：实验与日志证据
 
-先读 [G1](G1.md)和[分代 ZGC](GENERATIONAL_ZGC.md)，再预测日志。全部命令从仓库根目录执行，要求完整 JDK 25。下文明确区分可复现的步骤、一次本机观察和未保证出现的事件。
+先读 [G1](G1.md)和[分代 ZGC](GENERATIONAL_ZGC.md)，再预测日志。主流程从仓库根目录在 Minikube Pod 中执行，完整 JDK 25 位于镜像内。本篇 java/Maven/PowerShell 示例保留为可选本机对照，使用时才需要宿主机 JDK 25。下文明确区分可复现的步骤、一次本机观察和未保证出现的事件。
+
+## Minikube 周期观察入口
+
+先完成 [Pod 环境检查](../PODS.md)，再构建一个 GC 镜像，顺序选择 G1/ZGC Job，避免同时争抢资源：
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-gc:local labs/gc
+kubectl --context jvm-lab -n jvm-labs apply -f labs/gc/k8s/job-g1-cycles.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-g1-cycles -c lab --pod-running-timeout=120s
+```
+
+导出 G1 日志后再创建 `job-zgc-cycles.yaml`，对应 Job 为 `jvm-zgc-cycles`。两组工作期 120 秒，之后 300 秒保留只用于取证。下文日志解释与原理同样适用；Windows 本机历史结果不能充当 Linux Pod 实测。
 
 ## 1. 为什么增加 cycles 模式
 
@@ -139,34 +151,17 @@ heap dump/直方图可能触发 GC 并改变观测状态，优先另起一组运
 
 ## 7. 两份独立 Pod 观察配置
 
-同一个 GC 实验镜像支持两个不同 Job，分别覆盖完整 JAVA_TOOL_OPTIONS 和 cycles 参数：
+按篇首 Minikube 主入口构建一次 GC 镜像，先执行 job-g1-cycles.yaml。使用 [Pod 主手册](../PODS.md)导出 GC 轮转日志、JFR、实际 imageID 和资源状态，随后删除本次 G1 Job，再用相同镜像执行 ZGC：
 
-```powershell
-docker build -t jvm-lab-gc:local labs/gc
-minikube image load jvm-lab-gc:local
-kubectl apply -f labs/gc/k8s/job-g1-cycles.yaml
-kubectl apply -f labs/gc/k8s/job-zgc-cycles.yaml
-kubectl logs -f job/jvm-g1-cycles
-kubectl logs -f job/jvm-zgc-cycles
+```sh
+kubectl --context jvm-lab -n jvm-labs delete job jvm-g1-cycles
+kubectl --context jvm-lab -n jvm-labs apply -f labs/gc/k8s/job-zgc-cycles.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-zgc-cycles -c lab --pod-running-timeout=120s
 ```
 
-远程集群需先推送镜像并修改 image，见 [Pod 通用手册](../PODS.md)。两份清单默认实际工作 120 秒、开始等待 10 秒、结束保留 300 秒，JVM 是 PID 1；日志写入 `/data/gc.log` 并按 20M、3 文件配置轮转。
+两份 Job 工作 120 秒并保留 300 秒。hold 只保留 JVM/对象图，不继续制造压力；应在开始延迟中启动录制，结束后 dump 并在容器退出前导出。两组顺序运行，不让它们竞争同一节点的 CPU。
 
-```powershell
-kubectl exec job/jvm-g1-cycles -- jcmd 1 VM.flags
-kubectl exec job/jvm-zgc-cycles -- jcmd 1 GC.heap_info
-kubectl exec job/jvm-zgc-cycles -- jcmd 1 JFR.start name=gc settings=profile
-# 采样一段时间后，容器仍运行时主动导出录制
-kubectl exec job/jvm-zgc-cycles -- jcmd 1 JFR.dump name=gc filename=/data/gc-snapshot.jfr
-$labPod = kubectl get pod -l job-name=jvm-zgc-cycles -o jsonpath='{.items[0].metadata.name}'
-kubectl cp "${labPod}:/data" build/pod-zgc-evidence
-```
-
-在容器退出前复制目录，包含当前及轮转日志和已导出的 JFR。hold 窗口只保留 JVM/对象图，不继续制造同样的分配负载；过了工作阶段再采样，结果不能当作实际压力阶段。
-
-两份 Job 同时运行用于分别观察，不用于公平性能比较；它们可能竞争同一宿主机 CPU。正式对照应顺序运行并控制资源。清单未设置自动失败重试，避免改变单次实验；修改不可变的 Job 模板前先保存证据，再只删除对应 Job。
-
-本轮完成了本地 JVM 运行与清单解析验证，尚未实际构建镜像或运行这些 Pod；不会把可用配置与容器实测混为一谈。
+历史验证完成了本机 JVM 运行与清单解析，尚未实际构建镜像或运行这些 Pod；新主流程不会改变原证据范围。Job 模板更改前先保存原配置和结果，再只删除对应 Job。
 
 ## 8. 记录和验收
 

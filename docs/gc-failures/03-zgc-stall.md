@@ -1,5 +1,7 @@
 # 分代 ZGC：暂停短，不等于没有分配等待
 
+实验默认按 [Minikube Pod 主流程](../PODS.md)执行；先创建学习环境，再构建单个镜像。日志跟随退出后，先导出证据再删除 fault Job。
+
 独立项目：[zgc-stall](../../labs/zgc-stall/README.md)。前置：[分代 ZGC 详解](../gc/GENERATIONAL_ZGC.md)。这个实验研究应用在等待可分配空间时的成本，不把它命名为一次 G1 式 Full GC。
 
 ## 1. 负载和两个模式
@@ -8,9 +10,14 @@ fault 在 32 MiB 堆内由两个平台线程高速分配 64 KiB 数组，并以�
 
 fixed 把环的 payload 目标减到 4 MiB，并在每次分配后暂停 2 ms，提供更大的容量余量和较低的入口压力。两组保留相同的 32 MiB 堆及单个并发/并行 GC 工作线程设置。
 
-```powershell
-./scripts/run-gc-fault.ps1 -Lab zgc-stall -Mode fault
-./scripts/run-gc-fault.ps1 -Lab zgc-stall -Mode fixed
+```sh
+minikube -p jvm-lab image build -t jvm-lab-zgc-stall:local labs/zgc-stall
+kubectl --context jvm-lab -n jvm-labs apply -f labs/zgc-stall/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/zgc-stall-fault -c lab --pod-running-timeout=120s
+# 工作结束并导出 fault 证据后，再清理并运行 fixed
+kubectl --context jvm-lab -n jvm-labs delete job zgc-stall-fault
+kubectl --context jvm-lab -n jvm-labs apply -f labs/zgc-stall/k8s/job-fixed.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/zgc-stall-fixed -c lab --pod-running-timeout=120s
 ```
 
 参数顺序为 `mode seconds liveMiB workers blockKiB`。liveMiB 按线程和块大小划分，最少每线程一槽；因此改变块/线程数时要核算实际环容量，不能只看原输入目标。
@@ -57,9 +64,9 @@ ZGC 把大量工作并发进行，但应用仍需要可满足当前请求的空�
 本项目的 fault/fixed Job 默认都是 1 CPU、512MiB 内存上限，Java 堆仍为 32 MiB。先分别顺序运行，导出日志再做下一组，避免两个压力 Pod 同时争抢宿主机资源。
 
 ```powershell
-kubectl logs -f job/zgc-stall-fault -c lab
-kubectl exec job/zgc-stall-fault -c lab -- jcmd 1 VM.flags
-kubectl exec job/zgc-stall-fault -c lab -- jcmd 1 GC.heap_info
+kubectl --context jvm-lab -n jvm-labs logs -f job/zgc-stall-fault -c lab
+kubectl --context jvm-lab -n jvm-labs exec job/zgc-stall-fault -c lab -- jcmd 1 VM.flags
+kubectl --context jvm-lab -n jvm-labs exec job/zgc-stall-fault -c lab -- jcmd 1 GC.heap_info
 ```
 
 工作结束后的 hold 不再分配，应在工作阶段录制压力。需要更长窗口时修改 seconds 和 Job 总截止时间；不能把没再分配时的低等待量当作修复。

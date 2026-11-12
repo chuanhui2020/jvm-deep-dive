@@ -99,3 +99,13 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.
 - 检查本地文件/锚点、代码块、24 题编号与 Pod 资源/参数一致性；git diff --check 通过。
 
 剩余验证边界：仍未取得真实 Kubernetes/cgroup 运行证据，也未在 Linux/macOS 实测 PowerShell 启动路径。自动化检查只证明已列出的本机行为，不能据此宣布所有部署环境已验证。
+
+## Minikube Pod 主流程整理（2026-11-12）
+
+- README、主课程、基础实验 L01～L14、22 个项目说明及 GC 周期/故障手册改为 Pod 优先。本机 Java/Maven/PowerShell 示例保留为开发补充，正常学习入口为原生 minikube/kubectl。
+- 统一学习 profile/context `jvm-lab` 和 namespace `jvm-labs`；命令显式指定 context，保持各独立项目原始 Job 的资源与参数。默认节点内 image build，不再要求宿主机先构建镜像再额外 image load。
+- 新增 `k8s/minikube/` 的 Namespace、短 smoke Job 和 Kustomization。smoke 复用 env 镜像，delay/hold 均为零，180 秒截止、不自动重试；正式实验仍使用自身清单和观察窗口，不批量启动压力实验。
+- 实际执行 `kubectl kustomize k8s/minikube`，渲染仅包含 Namespace 与 smoke Job，namespace、镜像、资源、只读设置和可写目录核对通过。
+- 静态核对 22 个项目主入口的构建 tag、Job 名和清单路径与实际 YAML 一致；检查 L01～L14 Pod 入口、context/namespace、文档相对链接和代码块闭合。GC 专题按同一镜像、先导出和清理 fault 再运行 fixed 的顺序整理。
+- 本轮仅修改部署基础配置和文档，没有修改 Java、POM、镜像构建逻辑或 PowerShell 实现；未重复根 Maven 构建。上一轮 46 项测试通过属于本机证据，不标作 Pod 测试。
+- 当前 Docker Desktop Linux engine pipe 仍不可连接，已有 minikube profile 也无法检查容器状态。因此没有执行镜像构建、新 profile 创建或 Pod smoke；尚不能宣称 Minikube 实测成功。未更改或删除已有集群、namespace、Job 或 profile。

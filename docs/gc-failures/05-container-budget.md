@@ -17,13 +17,12 @@ MaxDirectMemorySize 大于容器 limit 是故意制造预算冲突，并非推�
 ## 2. 运行和观察
 
 ```powershell
-docker build -t jvm-lab-container-budget:local labs/container-budget
-minikube image load jvm-lab-container-budget:local
-kubectl apply -f labs/container-budget/k8s/job-fault.yaml
-$labPod = kubectl get pod -l job-name=container-budget-fault -o jsonpath='{.items[0].metadata.name}'
-kubectl logs -f $labPod -c lab
-kubectl get pod $labPod -o json
-kubectl describe pod $labPod
+minikube -p jvm-lab image build -t jvm-lab-container-budget:local labs/container-budget
+kubectl --context jvm-lab -n jvm-labs apply -f labs/container-budget/k8s/job-fault.yaml
+$labPod = kubectl --context jvm-lab -n jvm-labs get pod -l job-name=container-budget-fault -o jsonpath='{.items[0].metadata.name}'
+kubectl --context jvm-lab -n jvm-labs logs -f $labPod -c lab
+kubectl --context jvm-lab -n jvm-labs get pod $labPod -o json
+kubectl --context jvm-lab -n jvm-labs describe pod $labPod
 ```
 
 保存完整 JSON 中 `status.containerStatuses`：按容器名 `lab` 找 `state.terminated.reason`、exitCode、起止时间；本清单不重启，通常查看 state，而非只查看 lastState。预期是 reason=`OOMKilled`，常伴随 exitCode=137。**137 只能说明常见的 SIGKILL 退出编码，不能单独证明 OOMKilled**；人工 kill、超时清理也可能造成相同编码。
@@ -31,11 +30,11 @@ kubectl describe pod $labPod
 在启动延迟或仍存活时采样：
 
 ```powershell
-kubectl exec $labPod -c lab -- jcmd 1 GC.heap_info
-kubectl exec $labPod -c lab -- jcmd 1 VM.native_memory summary
-kubectl exec $labPod -c lab -- cat /sys/fs/cgroup/memory.current
-kubectl exec $labPod -c lab -- cat /sys/fs/cgroup/memory.max
-kubectl exec $labPod -c lab -- cat /sys/fs/cgroup/memory.events
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- jcmd 1 GC.heap_info
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- jcmd 1 VM.native_memory summary
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- cat /sys/fs/cgroup/memory.current
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- cat /sys/fs/cgroup/memory.max
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c lab -- cat /sys/fs/cgroup/memory.events
 ```
 
 这里给出典型 cgroup v2 容器路径，实际挂载、命名空间和版本必须检查。`memory.events` 的 oom/oom_kill 增量可补充证据；计数范围与层级有关，不应脱离对应 cgroup 解读。NMT 只跟踪 HotSpot 覆盖的内存，不等于 RSS，也不覆盖一切第三方 native 分配；结合 buffer 的 retainedMiB 输出及容器统计判断。[cgroup v2](https://docs.kernel.org/admin-guide/cgroup-v2.html)、[jcmd 25](https://docs.oracle.com/en/java/javase/25/docs/specs/man/jcmd.html)
@@ -55,12 +54,12 @@ kubectl exec $labPod -c lab -- cat /sys/fs/cgroup/memory.events
 普通 Job 的主容器终止后不能再通过它 exec/cp。可选 `job-fault-evidence.yaml` 增加普通证据容器，900 秒内只读共享 `/data`，主容器仍为 512Mi；证据容器另有 64Mi 上限，整个 Pod 总资源因此增加。
 
 ```powershell
-kubectl apply -f labs/container-budget/k8s/job-fault-evidence.yaml
-$labPod = kubectl get pod -l job-name=container-budget-fault-evidence -o jsonpath='{.items[0].metadata.name}'
-kubectl get pod $labPod -o json > build/container-budget-status.json
-kubectl logs $labPod -c lab > build/container-budget-console.log
-kubectl exec $labPod -c evidence -- ls -lh /data
-kubectl cp -c evidence "${labPod}:/data" build/container-budget-evidence
+kubectl --context jvm-lab -n jvm-labs apply -f labs/container-budget/k8s/job-fault-evidence.yaml
+$labPod = kubectl --context jvm-lab -n jvm-labs get pod -l job-name=container-budget-fault-evidence -o jsonpath='{.items[0].metadata.name}'
+kubectl --context jvm-lab -n jvm-labs get pod $labPod -o json > build/container-budget-status.json
+kubectl --context jvm-lab -n jvm-labs logs $labPod -c lab > build/container-budget-console.log
+kubectl --context jvm-lab -n jvm-labs exec $labPod -c evidence -- ls -lh /data
+kubectl --context jvm-lab -n jvm-labs cp -c evidence "${labPod}:/data" build/container-budget-evidence
 ```
 
 这是普通第二容器，不是自动随主容器结束的原生 sidecar。主容器已 OOMKilled 时 Pod/Job 仍可能 Running；务必按容器名检查状态。900 秒后证据容器退出，总截止时间为 1200 秒。emptyDir 随 Pod 删除消失；导出前不要删 Job。此方案只能保留已经写入共享卷的内容，不能补回被杀瞬间尚未写盘的数据。

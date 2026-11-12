@@ -1,5 +1,7 @@
 # G1：疏散失败、Full GC 与大对象连续空间
 
+实验默认按 [Minikube Pod 主流程](../PODS.md)执行；先创建学习环境，再构建单个镜像。日志跟随退出后，先导出证据再删除 fault Job。
+
 本篇把 [G1 实现详解](../gc/G1.md)中的目的空间、CSet、转发和 humongous 规则连到实际故障。两个独立项目分别是 [g1-evacuation](../../labs/g1-evacuation/README.md)和 [g1-humongous](../../labs/g1-humongous/README.md)。
 
 ## 1. 高存活率让疏散需要的空间增加
@@ -10,9 +12,14 @@ payload 并不等于 region 消耗：对象头、对齐、区域分配碎片、P
 
 教学配置还刻意使用 `G1ReservePercent=0`、`MaxTenuringThreshold=1`、关闭 adaptive IHOP 并把固定阈值设为 90。它组合了低余量、快速晋升和晚启动标记，用于放大失败路径，不能当生产配置复制。
 
-```powershell
-./scripts/run-gc-fault.ps1 -Lab g1-evacuation -Mode fault
-./scripts/run-gc-fault.ps1 -Lab g1-evacuation -Mode fixed
+```sh
+minikube -p jvm-lab image build -t jvm-lab-g1-evacuation:local labs/g1-evacuation
+kubectl --context jvm-lab -n jvm-labs apply -f labs/g1-evacuation/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/g1-evacuation-fault -c lab --pod-running-timeout=120s
+# 工作结束并导出 fault 证据后，再清理并运行 fixed
+kubectl --context jvm-lab -n jvm-labs delete job g1-evacuation-fault
+kubectl --context jvm-lab -n jvm-labs apply -f labs/g1-evacuation/k8s/job-fixed.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/g1-evacuation-fixed -c lab --pod-running-timeout=120s
 ```
 
 fixed 在同样教学 JVM 配置下，把基础 payload 降到 16 MiB，突发量降到 2 MiB。它展示“降低存活集和峰值”的修复；生产还应另做恢复合理默认策略的对照，而不是认为危险的教学参数值得保留。
@@ -80,9 +87,14 @@ g1-humongous 强制 1 MiB region。先创建 48 个 payload 为 600 KiB 的数�
 
 在 pinned `jdk-25-ga` 中，humongous 的比较是对象总大小严格大于 half-region 阈值。数组头和对齐也要计入，不能只比 payload。[G1CollectedHeap.hpp](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/hotspot/share/gc/g1/g1CollectedHeap.hpp)
 
-```powershell
-./scripts/run-gc-fault.ps1 -Lab g1-humongous -Mode fault
-./scripts/run-gc-fault.ps1 -Lab g1-humongous -Mode fixed
+```sh
+minikube -p jvm-lab image build -t jvm-lab-g1-humongous:local labs/g1-humongous
+kubectl --context jvm-lab -n jvm-labs apply -f labs/g1-humongous/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/g1-humongous-fault -c lab --pod-running-timeout=120s
+# 工作结束并导出 fault 证据后，再清理并运行 fixed
+kubectl --context jvm-lab -n jvm-labs delete job g1-humongous-fault
+kubectl --context jvm-lab -n jvm-labs apply -f labs/g1-humongous/k8s/job-fixed.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/g1-humongous-fixed -c lab --pod-running-timeout=120s
 ```
 
 fixed 保留同样的初始锚数组和总请求 payload，将新请求分成 256 KiB 数组。它改变内存布局/访问接口，生产使用前要确认调用方是否允许分段，不是对所有需要单一连续数组的算法都能透明替换。

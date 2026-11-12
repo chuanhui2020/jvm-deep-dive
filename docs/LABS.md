@@ -1,10 +1,16 @@
 # 实验手册：先预测，再解释
 
-所有命令从仓库根目录执行，使用完整 **JDK 25**。源码位于 labs/<实验名>/src/main/java/dev/jvm/labs/，各项目输出位于自身 target/，诊断证据放在 build/。实验尽量只改变一个关键条件；字节数、编译阈值、GC 次数和耗时以你的运行记录为准。
+主实验在 **Minikube Linux Pod** 中进行，从仓库根目录选择并部署对应 Job，见 [Pod 主手册](PODS.md)。镜像提供完整 **JDK 25**；下文 java、javap、Maven 和 PowerShell 命令作为源码开发、参数推演的本机补充，只有使用这些本机命令时才要求宿主机 JDK 25。源码位于 labs/<实验名>/src/main/java/dev/jvm/labs/，各项目输出位于自身 target/，诊断证据放在 build/。实验尽量只改变一个关键条件；字节数、编译阈值、GC 次数和耗时以你的运行记录为准。
 
-启动器有 14 个入口；L07/L08 复用 GC 负载，L12 包含堆与直接内存两个对照。GC/JIT 观测不是规范保证，自动验证不对具体时延或 GC 次数断言。
+现有 22 个独立项目，其中本节 L01～L14 是基础实验；L07/L08 复用 GC 负载，L12 包含堆与直接内存两个对照。GC/JIT 观测不是规范保证，自动验证不对具体时延或 GC 次数断言。
 
-## 启动与工具路径
+## Pod 主流程与本机辅助路径
+
+先完成 [Minikube 环境 smoke](PODS.md#1-创建学习环境)，再按 [项目清单](PODS.md#3-选择一个实验)选择单个 Job。在 Pod 内运行 `jcmd 1 ...`；查看字节码时可运行 `kubectl --context jvm-lab -n jvm-labs exec job/jvm-bytecode -c lab -- javap -classpath /app/lab.jar -p -c -v dev.jvm.labs.BytecodeDemo`。
+
+修改 JVM/应用参数时，复制该 Job 清单到自己的证据目录，完整修改 env/args 后重新创建；不要将本机脚本的参数误认为已作用于 Pod。
+
+以下为可选本机入口：
 
 ~~~powershell
 ./scripts/run-lab.ps1 env
@@ -24,6 +30,16 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.
 
 ## L01：确认你究竟运行了什么
 
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-env:local labs/env
+kubectl --context jvm-lab -n jvm-labs apply -f labs/env/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-env -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
+
 **对应第 01 章；源码 EnvironmentDemo.java。**
 
 ~~~powershell
@@ -41,6 +57,16 @@ powershell -NoProfile -ExecutionPolicy RemoteSigned -File ./scripts/verify-labs.
 
 ## L02：亲手追踪操作数栈与 monitor
 
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-bytecode:local labs/bytecode
+kubectl --context jvm-lab -n jvm-labs apply -f labs/bytecode/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-bytecode -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
+
 **对应第 02 章；源码 BytecodeDemo.java。**
 
 ~~~powershell
@@ -57,6 +83,16 @@ javap -classpath labs/bytecode/target/classes -p -c -v dev.jvm.labs.BytecodeDemo
 **结论边界：** javap 展示 class 字节码，不展示 JIT 最终机器码。volatile 的内存语义不能仅靠数指令判断。
 
 ## L03：静态初始化为什么没按直觉发生
+
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-init:local labs/init
+kubectl --context jvm-lab -n jvm-labs apply -f labs/init/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-init -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
 
 **对应第 03 章；源码 InitializationDemo.java。**
 
@@ -84,6 +120,16 @@ inherited=11
 
 ## L04：两个一模一样的 class 为什么不是一个类型
 
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-loader:local labs/loader
+kubectl --context jvm-lab -n jvm-labs apply -f labs/loader/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-loader -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
+
 **对应第 03 章；源码 ClassIdentityDemo.java。**
 
 ~~~powershell
@@ -99,6 +145,16 @@ inherited=11
 **延伸：** 为热部署画出“存活线程→上下文加载器→旧业务 Class”的路径。这个实验验证类身份，不直接验证类卸载。
 
 ## L05：对象头与浅大小，别再死记 12 字节
+
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-layout:local labs/layout
+kubectl --context jvm-lab -n jvm-labs apply -f labs/layout/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-layout -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
 
 **对应第 04 章；源码 ObjectLayoutDemo.java、SizeAgent.java。**
 
@@ -128,6 +184,16 @@ Java agent 的 Instrumentation.getObjectSize 测量对象的实现相关浅大�
 
 ## L06：循环引用与弱引用队列
 
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-references:local labs/references
+kubectl --context jvm-lab -n jvm-labs apply -f labs/references/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-references -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
+
 **对应第 05 章；源码 ReachabilityDemo.java。**
 
 ~~~powershell
@@ -144,6 +210,16 @@ Java agent 的 Instrumentation.getObjectSize 测量对象的实现相关浅大�
 
 ## L07：分配量大，为什么不必泄漏
 
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-gc:local labs/gc
+kubectl --context jvm-lab -n jvm-labs apply -f labs/gc/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-gc -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
+
 **对应第 06 章；源码 AllocationPressureDemo.java。**
 
 ~~~powershell
@@ -159,6 +235,18 @@ Java agent 的 Instrumentation.getObjectSize 测量对象的实现相关浅大�
 **边界：** 打印的 allocatedMiB 不包含对象头与 JVM 自身分配；程序不足以保证出现 mixed GC 或 Full GC，也不能用于证明 SATB 正确性。
 
 ## L08：G1 与分代 ZGC；humongous 对照
+
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-gc:local labs/gc
+kubectl --context jvm-lab -n jvm-labs apply -f labs/gc/k8s/job-g1-cycles.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-g1-cycles -c lab --pod-running-timeout=120s
+```
+
+ZGC 对照与工作期取证按 [周期手册](gc/EXPERIMENTS.md)执行，先导出并删除 G1 Job，再运行 ZGC。
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
 
 **对应第 07 章；继续使用同一个负载。**
 
@@ -188,6 +276,16 @@ Java agent 的 Instrumentation.getObjectSize 测量对象的实现相关浅大�
 
 ## L09：new 为什么没有对应的分配量
 
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-jit:local labs/jit
+kubectl --context jvm-lab -n jvm-labs apply -f labs/jit/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-jit -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
+
 **对应第 08 章；源码 EscapeAnalysisDemo.java。**
 
 ~~~powershell
@@ -206,6 +304,16 @@ ThreadMXBean 统计当前平台线程的分配字节。local 创建对象但仅�
 
 ## L10：volatile 可见性与复合操作原子性
 
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-jmm:local labs/jmm
+kubectl --context jvm-lab -n jvm-labs apply -f labs/jmm/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-jmm -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
+
 **对应第 09 章；源码 MemoryModelDemo.java。**
 
 ~~~powershell
@@ -221,6 +329,16 @@ ThreadMXBean 统计当前平台线程的分配字节。local 创建对象但仅�
 **边界：** 移除 volatile 后，不能用一次未复现来证明安全。需要 JMM 推理或专门的并发压力工具，如 JCStress，不能只加 Thread.sleep 当作同步。
 
 ## L11：一个 carrier、十二个独立 monitor
+
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-virtual:local labs/virtual
+kubectl --context jvm-lab -n jvm-labs apply -f labs/virtual/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-virtual -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
 
 **对应第 10 章；源码 VirtualThreadsDemo.java。**
 
@@ -239,6 +357,18 @@ ThreadMXBean 统计当前平台线程的分配字节。local 创建对象但仅�
 **边界：** 只验证 monitor 内的这类可卸载等待，不证明所有 JNI/本地阻塞都不会 pin，也不代表 CPU 计算会得到十二倍加速。
 
 ## L12：堆 OOM 与直接内存 OOM
+
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-heap-oom:local labs/heap-oom
+kubectl --context jvm-lab -n jvm-labs apply -f labs/heap-oom/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-heap-oom -c lab --pod-running-timeout=120s
+```
+
+直接内存对照另用 [direct 项目](../labs/direct/README.md)，不要沿用堆 OOM 的参数。
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
 
 **对应第 11 章；源码 HeapOomDemo.java、DirectMemoryDemo.java。**
 
@@ -262,6 +392,16 @@ heap-oom 用 32 MiB 堆强引用保留 1 MiB 数组，触发 Java heap space。d
 
 ## L13：Xss 改变了什么
 
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-stack:local labs/stack
+kubectl --context jvm-lab -n jvm-labs apply -f labs/stack/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-stack -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
+
 **对应第 11 章；源码 StackDepthDemo.java。**
 
 ~~~powershell
@@ -278,6 +418,16 @@ heap-oom 用 32 MiB 堆强引用保留 1 MiB 数组，触发 Java heap space。d
 **边界：** 本实验使用 main 平台线程。不能直接将结果推广为虚拟线程的栈预算模型；错误后的恢复也仅用于教学。
 
 ## L14：不用看源码，先用证据定位
+
+**Pod 主入口：** 先完成学习环境 smoke，再从仓库根目录执行。修改前保留原清单，取证完成后只清理本次 Job。
+
+```sh
+minikube -p jvm-lab image build -t jvm-lab-diagnose:local labs/diagnose
+kubectl --context jvm-lab -n jvm-labs apply -f labs/diagnose/k8s/job.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/jvm-diagnose -c lab --pod-running-timeout=120s
+```
+
+下文机制预测适用于 Pod；PowerShell/本机 java 示例仅作可选开发对照，Pod 变体修改 Job 的 env/args 后重建。
 
 **对应第 12 章；源码 DiagnosticsDemo.java。** 模式 cpu、deadlock、retention，第二参数为 1～300 秒。retention 最多保留 24 MiB，便于本地观察；不是真正无限增长泄漏。
 

@@ -1,5 +1,7 @@
 # 分配率高与保留泄漏：相似曲线，不同根因
 
+实验默认按 [Minikube Pod 主流程](../PODS.md)执行；先创建学习环境，再构建单个镜像。日志跟随退出后，先导出证据再删除 fault Job。
+
 本篇对应两个独立项目：[gc-churn](../../labs/gc-churn/README.md)与 [gc-retention](../../labs/gc-retention/README.md)。先复习 [根可达性](../foundations/04-reachability.md)和 [G1 周期](../gc/G1.md)。
 
 ## 1. 场景 A：根集合有界，分配却非常频繁
@@ -8,9 +10,14 @@ gc-churn 的 fault 在有界环中反复替换数组，默认只保留约 4 MiB 
 
 fixed 预先分配同样大小的缓冲池，并在循环中复用；两组工作窗口相同，但不保证操作数相同。这是“消除无效分配”的机制对照，不是吞吐基准或自动适用于所有业务的对象池方案。
 
-```powershell
-./scripts/run-gc-fault.ps1 -Lab gc-churn -Mode fault
-./scripts/run-gc-fault.ps1 -Lab gc-churn -Mode fixed
+```sh
+minikube -p jvm-lab image build -t jvm-lab-gc-churn:local labs/gc-churn
+kubectl --context jvm-lab -n jvm-labs apply -f labs/gc-churn/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/gc-churn-fault -c lab --pod-running-timeout=120s
+# 工作结束并导出 fault 证据后，再清理并运行 fixed
+kubectl --context jvm-lab -n jvm-labs delete job gc-churn-fault
+kubectl --context jvm-lab -n jvm-labs apply -f labs/gc-churn/k8s/job-fixed.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/gc-churn-fixed -c lab --pod-running-timeout=120s
 ```
 
 | 参数 | 意义 | 默认 |
@@ -69,9 +76,14 @@ flowchart LR
 
 fixed 在加入新块前移除旧引用，使数组 payload 上限约为 8 MiB；它仍会分配和 GC，甚至在紧张的小堆中出现某些疏散压力，但不会无限增长 CACHE。
 
-```powershell
-./scripts/run-gc-fault.ps1 -Lab gc-retention -Mode fault
-./scripts/run-gc-fault.ps1 -Lab gc-retention -Mode fixed
+```sh
+minikube -p jvm-lab image build -t jvm-lab-gc-retention:local labs/gc-retention
+kubectl --context jvm-lab -n jvm-labs apply -f labs/gc-retention/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/gc-retention-fault -c lab --pod-running-timeout=120s
+# 工作结束并导出 fault 证据后，再清理并运行 fixed
+kubectl --context jvm-lab -n jvm-labs delete job gc-retention-fault
+kubectl --context jvm-lab -n jvm-labs apply -f labs/gc-retention/k8s/job-fixed.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/gc-retention-fixed -c lab --pod-running-timeout=120s
 ```
 
 ### 故障瞬间与诊断窗口

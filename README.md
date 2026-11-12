@@ -36,49 +36,45 @@
 
 G1 和分代 ZGC 的深入学习见 [收集器专题](docs/gc/README.md)：包含完整周期、屏障与引用修正、固定版本源码调用链、真实日志片段、持续 cycles 负载、两份独立 Pod 观察配置和 24 个专题追问。第 06、07 章需结合本专题学习。
 
-## 快速开始（PowerShell）
+## 快速开始：Minikube Pod
 
-安装完整 **JDK 25**，将 JAVA_HOME 指向它；未设置时脚本从 PATH 查找。脚本同时检查 java 与 javac 的主版本，拒绝其他版本。实验运行时无第三方库和预览特性；构建使用 Maven，JUnit Jupiter 仅用于测试，首次构建需要联网下载依赖。
+**主要实验环境是 Minikube 中的 Linux Pod。** 源码、构建、运行、JVM 工具与资源限制都围绕单个实验 Pod 组织。每个项目独立 Maven 构建、独立镜像、独立 Job；根 POM 只用于聚合开发验证。宿主机准备 Minikube、kubectl 及运行中的容器/虚拟机驱动即可；以下以 Docker Linux 容器驱动为例，JDK 25 和 Maven 在镜像中提供。
 
-~~~powershell
-java -version
-javac -version
-./mvnw.cmd test
-./mvnw.cmd verify
-./scripts/run-lab.ps1 env
-./scripts/run-lab.ps1 init
-./scripts/run-lab.ps1 layout
-./scripts/verify-labs.ps1
-./scripts/verify-gc-evidence.ps1
-~~~
+从仓库根目录执行，命令可用于 PowerShell 或 Bash，无需仓库 PowerShell 启动器：
 
-每个实验都是独立 Maven 项目：`labs/<实验名>/` 内含自己的 `pom.xml`、Maven Wrapper、源码、测试、Dockerfile 和 Pod Job 配置。根 POM 仅聚合构建，不是各项目的 parent；复制一个项目到仓库外也能独立构建。所有项目产物统一命名为各自的 `target/lab.jar`。
+```sh
+minikube start -p jvm-lab --driver=docker --cpus=2 --memory=4096
+minikube -p jvm-lab image build -t jvm-lab-env:local labs/env
+kubectl --context jvm-lab apply -k k8s/minikube
+kubectl --context jvm-lab -n jvm-labs wait --for=condition=complete job/jvm-minikube-smoke --timeout=180s
+kubectl --context jvm-lab -n jvm-labs logs job/jvm-minikube-smoke -c lab
+```
 
-例如只构建、运行并制作 GC 实验镜像：
+这是专用 profile `jvm-lab` 和 namespace `jvm-labs`；显式指定 context，避免操作到其他集群。首次构建需要联网下载镜像、Maven 和测试依赖。已有同名 profile 时按原配置启动，保留实际资源记录。
 
-~~~powershell
-cd labs/gc
-./mvnw.cmd verify
-java -Xms64m -Xmx64m -XX:+UseG1GC '-Xlog:gc*' -jar target/lab.jar 60000 4
-docker build -t jvm-lab-gc:local .
-~~~
+完成环境检查后，选择一个实验，例如 G1 疏散失败：
 
-回到仓库根目录后仍可使用原来的启动入口：
+```sh
+minikube -p jvm-lab image build -t jvm-lab-g1-evacuation:local labs/g1-evacuation
+kubectl --context jvm-lab -n jvm-labs apply -f labs/g1-evacuation/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/g1-evacuation-fault -c lab --pod-running-timeout=120s
+```
 
-~~~powershell
-./scripts/run-lab.ps1 gc -JvmArgs @('-Xms64m','-Xmx64m','-XX:+UseG1GC','-Xlog:gc*') -LabArgs @('60000','4')
-~~~
+正式实验默认等待 10 秒开始，完成后保留 JVM 300 秒。日志跟随可能持续等待；Ctrl+C 仅停止跟随，不会停止 Pod。用同一个镜像顺序运行 fault/fixed，导出证据后再清理。完整的 22 项入口、资源基线、JFR/GC/dump 导出与故障判断见 [Minikube Pod 主手册](docs/PODS.md)。
 
-**部署与观察 Pod：** 见 [Pod 观察手册](docs/PODS.md)。每个项目独立生成镜像、独立创建一个 Job/Pod，可分别设置 CPU、内存、JVM 参数、实验参数并采集 JFR。镜像保留完整 JDK 25，支持在容器中直接执行 jcmd/jfr。
+## 本机开发与辅助验证
 
-Linux/macOS 可使用 [实验手册中的原生命令](docs/LABS.md#原生命令linuxmacos)，同样需要 JDK 25。课程采用经典 Java 源码组织，便于关注 JVM 机制。
+修改源码时可以使用完整 JDK 25，在项目目录执行 `./mvnw verify`；Windows 使用 `./mvnw.cmd verify`。每个项目产物为自己的 `target/lab.jar`，运行时没有第三方依赖，JUnit 仅用于测试。根目录 `./mvnw verify` 一次验证全部项目。
+
+`scripts/*.ps1` 保留为 Windows 本机调试和回归工具，使用说明见 [辅助工具说明](scripts/README.md)。它们不会创建 CPU/memory cgroup 限制，本机验证不代替 Pod 观察。正常学习路径不要求运行这些脚本。
 
 ## 仓库布局
 
 - labs/<实验名>/：独立 Maven 项目，包含源码、测试、镜像与 Kubernetes Job。
 - pom.xml：只负责一次构建全部项目。
 - docs/：章节内容、实验步骤、面试验收与官方链接。
-- scripts/：版本检查、编译、运行与语义验证。
+- k8s/minikube/：学习 namespace 与环境 smoke Job。
+- scripts/：可选的 Windows 本机开发和回归工具。
 - labs/*/target/：每个项目的 class、测试报告和可执行 JAR；不提交。
 - build/：本地验证日志、JFR 与 heap dump；不提交。
 
@@ -90,9 +86,9 @@ Linux/macOS 可使用 [实验手册中的原生命令](docs/LABS.md#原生命令
 
 新增 [GC 异常专题](docs/gc-failures/README.md)：8 个独立 Maven 项目，使实验总数达到 22 个。覆盖分配抖动、静态缓存保留、G1 疏散失败/大对象、ZGC Allocation Stall、加载器泄漏、容器内存和 CPU 配额。每项有 fault/fixed 对照、独立镜像与 Pod 清单，附 24 个面试追问及 [真实验证快照](docs/gc-failures/RESULTS.md)。
 
-```powershell
-./scripts/run-gc-fault.ps1 -Lab g1-evacuation -Mode fault
-./scripts/run-gc-fault.ps1 -Lab g1-evacuation -Mode fixed
+```sh
+kubectl --context jvm-lab -n jvm-labs apply -f labs/g1-evacuation/k8s/job-fixed.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/g1-evacuation-fixed -c lab --pod-running-timeout=120s
 ```
 
 容器 OOMKilled 和 CPU throttling 尚待真实集群验证；本机已复现的 JVM 信号与容器待观察项分别记录。

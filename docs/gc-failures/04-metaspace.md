@@ -1,5 +1,7 @@
 # 加载器保留：堆没有满，Metaspace 却耗尽
 
+实验默认按 [Minikube Pod 主流程](../PODS.md)执行；先创建学习环境，再构建单个镜像。日志跟随退出后，先导出证据再删除 fault Job。
+
 独立项目：[metaspace-leak](../../labs/metaspace-leak/README.md)。先复习 [类身份与卸载](../foundations/03-class-loading.md)。这里观察类元数据预算与加载器生命周期，不把它误称为普通 byte[] 堆泄漏。
 
 ## 1. 同一份字节可以产生很多运行时类型
@@ -21,9 +23,14 @@ flowchart LR
 
 ## 2. 故障与修复
 
-```powershell
-./scripts/run-gc-fault.ps1 -Lab metaspace-leak -Mode fault
-./scripts/run-gc-fault.ps1 -Lab metaspace-leak -Mode fixed
+```sh
+minikube -p jvm-lab image build -t jvm-lab-metaspace-leak:local labs/metaspace-leak
+kubectl --context jvm-lab -n jvm-labs apply -f labs/metaspace-leak/k8s/job-fault.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/metaspace-leak-fault -c lab --pod-running-timeout=120s
+# 工作结束并导出 fault 证据后，再清理并运行 fixed
+kubectl --context jvm-lab -n jvm-labs delete job metaspace-leak-fault
+kubectl --context jvm-lab -n jvm-labs apply -f labs/metaspace-leak/k8s/job-fixed.yaml
+kubectl --context jvm-lab -n jvm-labs logs -f job/metaspace-leak-fixed -c lab --pod-running-timeout=120s
 ```
 
 配置为 64 MiB 最大堆、16 MiB MaxMetaspaceSize，默认最多定义 12000 次。fault 不清理 CACHE；fixed 在缓存达到 64 个加载器后清掉旧批次。fixed 循环不主动调用 System.gc，由实际元空间压力和 VM 策略处理可卸载资源。
